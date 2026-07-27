@@ -87,19 +87,25 @@
     <div class="mobile-menu-overlay"></div>
     <div class="sidebar-menu-links">
       <a href="{$U_HOME}" class="sidebar-icon-link" title="{'Home'|translate}"><i class="icon-home"></i></a>
-      <a href="{$ROOT_URL}search.php" class="sidebar-icon-link" title="{'Search'|translate}"><i class="icon-lens"></i></a>
+      <a href="{$ROOT_URL}search.php" class="sidebar-icon-link" title="{'Search'|translate}"><i
+          class="icon-lens"></i></a>
 
       {* Dropdown container for Albums *}
-      <div class="sidebar-dropdown-container">
+      <div class="sidebar-dropdown-container sidebar-dropdown-container-album">
         <a href="#" onclick="return false;" class="sidebar-icon-link sidebar-icon-link-drop"
           title="{'Albums'|translate}"><i class="icon-structure"></i></a>
 
         <div class="sidebar-dropdown-menu album-menu">
           <i class="icon-cross usable-icon mobile-close-btn"></i>
-          <div class="dropdown-menu-title">{'Albums'|translate}</div>
+          <div class="dropdown-menu-title menu-title-album-w-toc">{'Albums'|translate}
+            <a href="{$ROOT_URL}index.php?/table_of_content" class="btn-table-of-content"
+              title="{'Table of content'|translate}">
+              <i class="icon-structure"></i>
+            </a>
+          </div>
           <ul class="album-dropdown-list">
             {if isset($MACADAM_HEADER_ALBUMS) && !empty($MACADAM_HEADER_ALBUMS)}
-              
+
               {* Define a recursive function to handle infinite album depth *}
               {function name=render_album_list depth=0}
                 {foreach from=$albums item=album}
@@ -138,13 +144,6 @@
                   <div class="album-item-row"><a href="#">{'No albums'|translate}</a></div>
                 </li>
               {/if}
-              <div class="album-item-row table-of-content-cont">
-                <a href="{$ROOT_URL}index.php?/table_of_content" class="btn-table-of-content"
-                  title="{'Table of content'|translate}">
-                  <i class="icon-structure"></i>
-                  {'Table of content'|translate}
-                </a>
-              </div>
           </ul>
 
           {if isset($MACADAM_TOTAL_ALBUMS) && $MACADAM_TOTAL_ALBUMS > 0}
@@ -182,6 +181,15 @@
                 </li>
               {/foreach}
             {/if}
+            <li>
+              <div class="tag-item-row">
+                <a href="{$ROOT_URL}index.php?/table_of_content" title="{'Table of content'|translate}">
+                  {'Table of content'|translate}</a>
+              </div>
+            </li>
+            <li>
+              <div class="tag-item-row"><a href="{$collection.url}">{'Collections'|translate}</a></div>
+            </li>
             {* <hr> *}
             {if isset($blocks.mbMenu->data.tags)}
               {assign var='tag_link' value=$blocks.mbMenu->data.tags}
@@ -223,7 +231,7 @@
       </div>
 
       {* Dropdown container for Tags *}
-      <div class="sidebar-dropdown-container">
+      <div class="sidebar-dropdown-container sidebar-dropdown-container-tags">
         <a href="" class="sidebar-icon-link sidebar-icon-link-drop" title="{'Tags'|translate}"><i
             class="icon-tags"></i></a>
         <div class="sidebar-dropdown-menu">
@@ -246,7 +254,7 @@
       </div>
 
       {* Dropdown container for Collections / Favorites *}
-      <div class="sidebar-dropdown-container">
+      <div class="sidebar-dropdown-container sidebar-dropdown-container-collections">
         {if isset($user_collections)}
           <a href="" class="sidebar-icon-link-drop sidebar-icon-link" title="{'Collections'|translate}"><i
               class="icon-star"></i></a>

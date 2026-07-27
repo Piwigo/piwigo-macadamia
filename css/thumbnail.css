@@ -185,7 +185,6 @@
   text-align: center;
 } */
 
-
 @media (max-width: 768px) {
   .macadam-photos-grid {
     display: grid !important;
@@ -224,4 +223,5 @@
   .macadam-photos-grid-title-al {
     margin-top: -10px !important;
   }
+
 }

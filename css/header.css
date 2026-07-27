@@ -44,7 +44,7 @@
 }
 
 .macadam-header-search {
-  position: relative;
+  /* position: relative; */
   width: 100%;
   /* max-width: 733px; */
   display: flex;
@@ -68,12 +68,14 @@
   display: flex;
   align-items: center;
   min-width: 468px;
+  position: relative;
 }
 
 .macadam-header-search .search-icon {
   position: absolute;
-  left: 105px;
-  top: 30%;
+  left: 13px;
+  z-index: 10;
+  /* top: 30%; */
   font-size: 16px;
   color: #777777;
   pointer-events: none;
@@ -81,6 +83,7 @@
 
 .macadam-header-search input[type="text"] {
   width: 100%;
+  /* position: relative; */
   padding: 12px 15px 12px 45px;
   font-size: 15px;
   border: none;
@@ -351,6 +354,13 @@ a.sidebar-icon-link:hover i::before,
   /* padding-left is handled in the template */
 }
 
+.menu-title-album-w-toc{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
 /* Dropdown footer totals */
 .dropdown-menu-footer {
   background: #ffffff;
@@ -469,11 +479,27 @@ a.sidebar-icon-link:hover i::before,
 }
 
 .mcs-side-results .mcs-side-badge {
-  color: #F6F7FF;
-  background: #090D31;
+  color: #f6f7ff;
+  background: #090d31;
 }
 
 @media (max-width: 768px) {
+
+  .sidebar-dropdown-container-album,
+  .sidebar-dropdown-container-tags,
+  .sidebar-dropdown-container-collections {
+    display: none !important;
+  }
+
+  .macadam-header-search form {
+    min-width: 338px;
+  }
+
+  /* .macadam-header-search .search-icon {
+    left: 34px;
+    top: 30%;
+  } */
+
   .macadam-sidebar-nav {
     position: fixed !important;
     bottom: 0 !important;
@@ -494,7 +520,7 @@ a.sidebar-icon-link:hover i::before,
     display: flex !important;
     flex-direction: row !important;
     width: 100% !important;
-    justify-content: space-around !important;
+    justify-content: space-evenly !important;
     align-items: center !important;
     margin: 0 !important;
     padding: 0 40px !important;
@@ -504,7 +530,7 @@ a.sidebar-icon-link:hover i::before,
     margin-left: 0 !important;
     width: 100vw !important;
     min-width: 0 !important;
-    padding-bottom: 75px !important;
+    /* padding-bottom: 75px !important; */
   }
 
   .mobile-menu-overlay.active {

@@ -51,7 +51,9 @@
   text-decoration: none !important;
   font-size: 28px;
   font-weight: bold;
-  transition: transform 0.2s, background-color 0.2s;
+  transition:
+    transform 0.2s,
+    background-color 0.2s;
   cursor: pointer;
   user-select: none;
 }
@@ -86,7 +88,9 @@
   border-radius: 6px;
   overflow: hidden;
   border: 2px solid transparent;
-  transition: transform 0.2s, border-color 0.2s;
+  transition:
+    transform 0.2s,
+    border-color 0.2s;
   opacity: 0.6;
 }
 
@@ -435,7 +439,9 @@ ul.macadam-info-list li i.icon-eye {
   color: #2d3748 !important;
   text-decoration: none !important;
   font-size: 14px !important;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
   position: relative;
 }
 
@@ -603,7 +609,7 @@ li.commentElement .actions a {
 }
 
 li.commentElement .actions a:hover {
-  color: #5C6AE2 !important;
+  color: #5c6ae2 !important;
 }
 
 li.commentElement .actions a[href*="delete"]:hover {
@@ -658,7 +664,9 @@ form#addComment input[type="submit"] {
   border-radius: 8px !important;
   cursor: pointer !important;
   font-size: 0.9rem !important;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
 }
 
 form#addComment input[type="submit"]:hover {
@@ -678,7 +686,7 @@ form#addComment input[type="submit"]:active {
   right: 20px;
   background: none;
   border: none;
-  color: #F6F7FF;
+  color: #f6f7ff;
   cursor: pointer;
   flex-direction: column;
   align-items: center;
@@ -712,8 +720,8 @@ form#addComment input[type="submit"]:active {
 }
 
 .macadam-nav-arrow.arrow-fullscreen {
-  background-color: #F6F7FF !important;
-  color: #090D31 !important;
+  background-color: #f6f7ff !important;
+  color: #090d31 !important;
 }
 
 .macadam-in-fullscreen .macadam-index-bar,
@@ -743,6 +751,10 @@ form#addComment input[type="submit"]:active {
   display: flex;
 }
 
+.arrow-mobile{
+  display: none !important;
+}
+
 /* MEDIA  */
 
 @media (max-width: 768px) {
@@ -761,5 +773,65 @@ form#addComment input[type="submit"]:active {
     justify-content: flex-start !important;
     overflow-x: auto !important;
   }
-}
 
+  #breadcrumb .intermediate-album a:nth-of-type(1) {
+    display: none !important;
+  }
+
+  #breadcrumb .intermediate-album a:nth-of-type(2) {
+    font-size: 0;
+    display: inline-block;
+  }
+
+  #breadcrumb .intermediate-album a:nth-of-type(2)::before {
+    content: "...";
+    font-size: 1rem;
+    color: inherit;
+  }
+
+  /* #breadcrumb .breadcrumb-current-tittle {
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+  } */
+
+  .picture-index-bar {
+    padding-left: 26px !important;
+    padding-right: 26px !important;
+    margin-top: 30px !important;
+  }
+
+  .fullscreen-icon-container {
+    display: none !important;
+  }
+
+  .macadam-main-container{
+    padding-bottom: 0 !important;
+  }
+
+  .macadam-picture-viewer{
+    padding-bottom: 26px;
+  }
+
+  .macadam-nav-arrow{
+    display: none !important;
+  }
+
+  .carousel-strip-container{
+    position: relative !important;
+  }
+
+  .arrow-mobile{
+    display: flex !important;
+    position: absolute !important;
+    z-index: 10 !important;
+  }
+
+  .arrow-mobile.arrow-right{
+    right: 0 !important;
+  }
+
+  .arrow-mobile.arrow-left{
+    left: 0 !important;
+  }
+}
