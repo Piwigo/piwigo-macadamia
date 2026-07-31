@@ -8,13 +8,11 @@
     
     {if count($SELECT_RELATED_TAGS) > 1}
       <a class="selected-related-tag-remove" href="{$TAG.remove_url}" style="border:none;" title="{'remove this tag from the list'|translate}">
-        {* Ici tu avais mis fa-plus, j'ai remis une icône de croix de suppression si c'est pour supprimer le tag *}
         <i class="gallery-icon-cancel fas fa-times"></i> 
       </a>
     {/if}
   </span>
 
-  {* AJOUT DU SÉPARATEUR : S'affiche uniquement si ce n'est PAS le dernier tag de la boucle *}
   {if !$smarty.foreach.selected_tags.last}
     <span class="tag-separator-plus">
       <i class="icon-plus"></i>

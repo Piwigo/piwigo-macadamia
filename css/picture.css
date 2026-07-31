@@ -40,7 +40,7 @@
 }
 
 .macadam-nav-arrow {
-  width: 45px;
+  min-width: 45px;
   height: 45px;
   background-color: #1e2044;
   color: #ffffff !important;
@@ -106,7 +106,7 @@
 }
 
 .strip-thumb-item.active {
-  border-color: #e66741;
+  border-color: #5c6ae1;
   opacity: 1;
   transform: scale(1.1);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -129,7 +129,7 @@
   display: flex;
   width: 100%;
   min-height: calc(100vh - 80px);
-  background-color: #f7f9fa;
+  background-color: #F5F5F5;
   padding-right: 350px;
   box-sizing: border-box;
 }
@@ -185,6 +185,7 @@ body.thePicturePage #content {
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 20px;
+  align-items: center;
   padding: 10px 0;
 }
 
@@ -232,6 +233,10 @@ ul.macadam-info-list li {
   padding-bottom: 22px;
   font-size: 14px;
   font-weight: 600;
+}
+
+ul.macadam-info-list li a {
+  color: #5C6AE2;
 }
 
 ul.macadam-info-list li i {

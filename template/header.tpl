@@ -198,7 +198,7 @@
                   <a href="{$tag_link.URL}" title="{$tag_link.TITLE}">
                     {$tag_link.NAME}
                     {if isset($tag_link.COUNTER) and $tag_link.COUNTER > 0}
-                      <span class="menu-counter">({$tag_link.COUNTER})</span>
+                      <span class="menu-counter">{$tag_link.COUNTER}</span>
                     {/if}
                   </a>
                 </div>
@@ -211,7 +211,7 @@
                   <a href="{$comment_link.URL}" title="{$comment_link.TITLE}">
                     {$comment_link.NAME}
                     {if isset($comment_link.COUNTER) and $comment_link.COUNTER > 0}
-                      <span class="menu-counter">({$comment_link.COUNTER})</span>
+                      <span class="menu-counter">{$comment_link.COUNTER}</span>
                     {/if}
                   </a>
                 </div>
