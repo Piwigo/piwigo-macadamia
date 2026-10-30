@@ -13,15 +13,15 @@
                 <span class="album-toggle-disabled"><i class="icon-arrow-right"></i></span>
               {/if}
               
-              <a class="album-link" href="{$album.URL}" title="{$album.name|escape}">{$album.name}</a>
+              <a class="album-link" href="{$album.URL}">{$album.name}</a>
               <div class="album-counts">
                 {if $album.count_categories > 0}
-                  <span class="album-count subfolders-badge" title="{'Albums'|translate}">
+                  <span class="album-count subfolders-badge">
                     {$album.count_categories} <i class="icon-folder"></i>
                   </span>
                 {/if}
                 {if $album.count_images > 0}
-                  <span class="album-count images-badge" title="{'Images'|translate}">
+                  <span class="album-count images-badge">
                     {$album.count_images} <i class="icon-picture"></i>
                   </span>
                 {/if}

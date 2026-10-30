@@ -2,8 +2,8 @@
 
 .macadam-calendar-wrapper {
   font-family: system-ui, -apple-system, sans-serif;
-  color: #1e293b;
-  background: #f8fafc;
+  color: var(--color-text);
+  background: var(--color-surface-light);
   padding: 24px;
   border-radius: 12px;
 }
@@ -17,11 +17,11 @@
 
 .cal-select-sort {
   padding: 6px 12px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-border);
   border-radius: 20px;
-  background-color: #ffffff;
+  background-color: var(--color-white);
   font-size: 13px;
-  color: #334155;
+  color: var(--color-text-slate);
   cursor: pointer;
 }
 
@@ -33,7 +33,7 @@
 
 .cal-nav-arrow {
   text-decoration: none;
-  color: #334155;
+  color: var(--color-text-slate);
   font-weight: bold;
   font-size: 18px;
   padding: 4px 8px;
@@ -47,12 +47,12 @@
 .cal-current-date {
   font-size: 16px;
   text-transform: capitalize;
-  color: #1e293b;
+  color: var(--color-text);
 }
 
 .cal-view-modes {
   display: flex;
-  background: #e2e8f0;
+  background: var(--color-border-light);
   padding: 4px;
   border-radius: 8px;
   gap: 4px;
@@ -64,46 +64,46 @@
   font-weight: 500;
   border-radius: 6px;
   cursor: pointer;
-  color: #64748b;
+  color: var(--color-text-light);
   transition: all 0.2s;
 }
 
 .cal-btn-mode.active {
-  background: #ffffff;
-  color: #1e293b;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: var(--color-white);
+  color: var(--color-text);
+  box-shadow: 0 1px 3px var(--color-transparent-black-10);
 }
 
 .macadam-calendar-table {
   width: 100%;
   border-collapse: collapse;
-  background: #ffffff;
+  background: var(--color-white);
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px -1px var(--color-transparent-black-05);
 }
 
 .macadam-calendar-table th {
-  background: #f1f5f9;
+  background: var(--color-surface-pale);
   padding: 12px;
   font-size: 12px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--color-text-light);
   text-transform: uppercase;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 .cal-day-cell {
   width: 14.28%;
   height: 120px;
   vertical-align: top;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border-light);
   padding: 8px;
   box-sizing: border-box;
 }
 
 .cal-day-cell.outside-month {
-  background-color: #f8fafc;
+  background-color: var(--color-surface-light);
 }
 
 .cal-day-cell .cell-header {
@@ -116,17 +116,17 @@
 .cal-day-cell .day-number {
   font-size: 12px;
   font-weight: 500;
-  color: #94a3b8;
+  color: var(--color-text-faded);
 }
 
 .cal-day-cell.has-photos .day-number {
-  color: #1e293b;
+  color: var(--color-text);
   font-weight: 600;
 }
 
 .photos-badge {
-  background-color: #3b5284;
-  color: #ffffff;
+  background-color: var(--color-calendar-blue);
+  color: var(--color-white);
   font-size: 10px;
   padding: 2px 8px;
   border-radius: 4px;
@@ -159,20 +159,20 @@
 }
 
 .block-orange {
-  background-color: #e26d43;
+  background-color: var(--color-accent-orange);
 }
 .block-beige {
-  background-color: #fcd3a1;
+  background-color: var(--color-accent-apricot);
 }
 .block-dark {
-  background-color: #1e293b;
+  background-color: var(--color-text);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .plus-icon {
-  color: #ffffff;
+  color: var(--color-white);
   font-size: 16px;
   font-weight: 300;
   line-height: 1;

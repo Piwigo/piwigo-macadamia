@@ -51,7 +51,7 @@
         <a href="{$cat.URL}" class="macadam-album-thumbs">
           <div class="main-thumb-container">
             {if isset($derivative)}
-              <img {if $derivative->is_cached()}src="{$derivative->get_url()}" {else}src="{$ROOT_URL}{$themeconf.icon_dir}/img_small.png" data-src="{$derivative->get_url()}" {/if} alt="{$cat.TN_ALT}" title="{$cat.NAME|@replace:'"':' '|@strip_tags:false} - {'display this album'|@translate}" class="main-thumb">
+              <img {if $derivative->is_cached()}src="{$derivative->get_url()}" {else}src="{$ROOT_URL}{$themeconf.icon_dir}/img_small.png" data-src="{$derivative->get_url()}" {/if} alt="{$cat.TN_ALT}"':' '|@strip_tags:false} - {'display this album'|@translate}" class="main-thumb">
               {else}
               <div class="no-thumb-placeholder"></div>
             {/if}
@@ -112,14 +112,14 @@
             {if !empty($cat.DESCRIPTION)}
               <p class="album-description">{$cat.DESCRIPTION}</p>
               {else}
-              <p class="album-description empty-desc">{'No description available for this album.'|translate}</p>
+              <p class="album-description empty-desc"></p>
             {/if}
           </div>
 
           {if isset($cat.count_categories) and $cat.count_categories > 0}
             <div class="album-footer-icon">
-              <a href="{$cat.URL}" title="{'Toggle sub-albums'|translate}" class="album-sub-toggle">
-                <i class="icon-structure"></i>
+              <a href="{$cat.URL}" class="album-sub-toggle">
+                <i class="icon-arrow-down"></i>
               </a>
             </div>
           {/if}

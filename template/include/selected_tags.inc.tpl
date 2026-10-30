@@ -2,12 +2,12 @@
 
 {foreach from=$SELECT_RELATED_TAGS item=TAG name=selected_tags}
   <span class="selected-related-tag {if 1 == count($SELECT_RELATED_TAGS)}unique-tag{/if}">
-    <a href="{$TAG.index_url}" title="{'display photos linked to this tag'|translate}">
+    <a href="{$TAG.index_url}">
       {$TAG.tag_name}
     </a>
     
     {if count($SELECT_RELATED_TAGS) > 1}
-      <a class="selected-related-tag-remove" href="{$TAG.remove_url}" style="border:none;" title="{'remove this tag from the list'|translate}">
+      <a class="selected-related-tag-remove" href="{$TAG.remove_url}" style="border:none;">
         <i class="gallery-icon-cancel fas fa-times"></i> 
       </a>
     {/if}

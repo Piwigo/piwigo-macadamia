@@ -1,5 +1,4 @@
 /* picture */
-
 .macadam-picture-viewer {
   display: flex;
   flex-direction: column;
@@ -25,25 +24,36 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #fdfdfd;
-  border: 1px solid #e5e5e5;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-lighter);
   border-radius: 8px;
-  padding: 0 30px;
-  max-height: 60vh;
+  padding: 0;
+  overflow: auto;
+  scrollbar-gutter: stable;
+  min-height: 400px;
 }
 
 .macadam-photo-display img {
-  max-width: 100%;
-  max-height: 60vh;
-  object-fit: contain;
+  width: auto;
+  height: auto;
+  object-fit: none;
   border-radius: 4px;
+}
+
+.macadam-photo-display img.macadam-natural-size {
+  max-width: none !important;
+  max-height: none !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: none;
+  display: block;
 }
 
 .macadam-nav-arrow {
   min-width: 45px;
   height: 45px;
-  background-color: #1e2044;
-  color: #ffffff !important;
+  background-color: var(--menu-icon);
+  color: var(--color-white) !important;
   border-radius: 6px;
   display: flex;
   align-items: center;
@@ -52,20 +62,27 @@
   font-size: 28px;
   font-weight: bold;
   transition:
-    transform 0.2s,
-    background-color 0.2s;
+    color 0.2s;
   cursor: pointer;
   user-select: none;
 }
 
-.macadam-nav-arrow:hover {
-  background-color: #e66741;
-  transform: scale(1.05);
+.macadam-nav-arrow:not(.disabled):hover {
+  background-color: var(--menu-icon-hover) !important;
 }
 
+.macadam-nav-arrow i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  margin: 0;
+}
+
+.macadam-nav-arrow.arrow-fullscreen.disabled,
 .macadam-nav-arrow.disabled {
-  background-color: #e5e5e5;
-  color: #aaaaaa !important;
+  background-color: var(--color-border-lighter);
+  color: var(--color-text-silver) !important;
   cursor: not-allowed;
   transform: none;
 }
@@ -77,45 +94,57 @@
   overflow-x: auto;
   gap: 12px;
   padding: 15px;
-  background-color: #f7f7f9;
+  background-color: var(--color-surface-gray);
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
+@media (min-width: 769px) {
+  .carousel-strip-container {
+    width: calc(100% + 350px);
+  }
+
+  .macadam-carousel-strip {
+    justify-content: flex-start;
+    padding-right: calc(15px + 320px);
+  }
+}
+
 .strip-thumb-item {
-  min-width: 150px;
-  min-height: 103px;
-  border-radius: 6px;
+  width: 150px;
+  height: 100px;
+  flex: 0 0 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  background-color: var(--color-surface-blue);
+  border-radius: 5px;
+  border: 1px solid #C1C1C1;
   overflow: hidden;
-  border: 2px solid transparent;
-  transition:
-    transform 0.2s,
-    border-color 0.2s;
-  opacity: 0.6;
 }
 
 .strip-thumb-item img {
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .strip-thumb-item:hover {
-  opacity: 0.9;
-  transform: scale(1.05);
-}
-
-.strip-thumb-item.active {
-  border-color: #5c6ae1;
-  opacity: 1;
-  transform: scale(1.1);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  opacity: 1 !important;
+  transform: none !important;
+  border-color: #C1C1C1 !important;
+  box-shadow: none !important;
+  filter: none !important;
+  transition: none !important;
+  border: 1px solid #C1C1C1;
 }
 
 .strip-thumb-placeholder {
   width: 80px;
   height: 60px;
-  background-color: #e5e5e5;
+  background-color: var(--color-border-lighter);
   border-radius: 6px;
   opacity: 0.3;
 }
@@ -129,7 +158,7 @@
   display: flex;
   width: 100%;
   min-height: calc(100vh - 80px);
-  background-color: #F5F5F5;
+  background-color: var(--color-surface-soft);
   padding-right: 350px;
   box-sizing: border-box;
 }
@@ -141,37 +170,41 @@ body.thePicturePage #content {
   margin: 0 !important;
 }
 
+body.thePicturePage #content.contentWithMenu {
+  margin-left: 0 !important;
+}
+
 .macadam-picture-sidebar {
   position: fixed !important;
   top: 0 !important;
   right: 0 !important;
-  width: 320px !important;
+  width: 270px !important;
   height: 100vh !important;
-  background-color: #ffffff;
-  border-left: 1px solid #e2e8f0;
+  background-color: var(--color-white);
+  border-left: 1px solid var(--color-border-light);
   display: flex;
   flex-direction: column;
   z-index: 10 !important;
-  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.05);
+  box-shadow: -2px 0 10px var(--color-transparent-black-05);
 }
 
 .sidebar-tabs {
   display: flex;
-  border-bottom: 2px solid #e2e8f0;
 }
 
 .sidebar-tabs .tab-btn {
   flex: 1;
-  padding: 45px;
+  padding: 40px 20px;
   background: none;
   border: none;
   font-size: 1.2rem;
   cursor: pointer;
   transition: background 0.2s;
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 .sidebar-tabs .tab-btn.active {
-  border-bottom: 3px solid #3b4252;
+  border-bottom: 5px solid var(--color-text-muted-dark);
   font-weight: bold;
 }
 
@@ -191,12 +224,12 @@ body.thePicturePage #content {
 
 .tag-badges-container i {
   font-size: 16px;
-  color: #4c566a;
+  color: var(--color-text-muted);
 }
 
 .macadam-tag-badge {
-  background-color: #434980;
-  color: #ffffff;
+  background-color: var(--color-brand-muted);
+  color: var(--color-white);
   padding: 6px 14px;
   border-radius: 6px;
   text-decoration: none;
@@ -214,7 +247,7 @@ body.thePicturePage #content {
   align-items: center;
   gap: 12px;
   padding: 10px 0;
-  color: #4c566a;
+  color: var(--color-text-muted);
   font-size: 0.95rem;
 }
 
@@ -236,13 +269,18 @@ ul.macadam-info-list li {
 }
 
 ul.macadam-info-list li a {
-  color: #5C6AE2;
+  color: var(--color-brand-hover);
+  transition: color 0.2s ease;
+}
+
+ul.macadam-info-list li a:hover {
+  color: var(--color-brand-muted) !important;
 }
 
 ul.macadam-info-list li i {
   font-size: 16px;
   margin-right: 10px;
-  color: #4c566a;
+  color: var(--color-text-muted);
 }
 
 ul.macadam-info-list li i.icon-eye {
@@ -250,20 +288,109 @@ ul.macadam-info-list li i.icon-eye {
   margin-right: 15px;
 }
 
+ul.macadam-info-list li i.icon-folder {
+  font-size: 13px;
+  margin-right: 14px;
+  margin-left: 2px;
+}
+
+.rating-buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rating-star {
+  position: relative;
+  display: inline-flex;
+  color: var(--color-border-light);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.rating-star input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rating-star:hover,
+.rating-star:has(input:focus-visible) {
+  color: var(--menu-icon-hover);
+  transform: scale(1.1);
+}
+
+.rating-star:has(.rateButtonSelected) {
+  color: var(--menu-icon-hover);
+}
+
+.rating-reset {
+  position: relative;
+  display: inline-flex;
+  color: var(--color-text-muted);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.rating-reset input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rating-reset:hover,
+.rating-reset:has(input:focus-visible) {
+  color: var(--menu-icon-hover);
+  transform: scale(1.1);
+}
+
+.comment-toggle-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--menu-icon);
+  color: var(--color-white);
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.comment-toggle-button:hover {
+  background-color: var(--menu-icon-hover);
+}
+
+.comment-toggle-button::before {
+  margin: 0;
+}
+
 .macadam-footer {
   text-align: center;
   padding: 5px 20px;
+  margin-left: 60px;
 }
 
 .macadam-footer p {
   font-family: "Open Sans", sans-serif;
-  font-weight: 400;
+  font-weight: 300;
   font-style: normal;
-  font-size: 18px;
+  font-size: 15px;
   line-height: 100%;
   letter-spacing: 0;
-  color: #646464;
-  margin: 0;
+  color: var(--color-text-gray);
+  margin: 0 0 10px;
 }
 
 /* picture menu dropdown */
@@ -275,179 +402,172 @@ ul.macadam-info-list li i.icon-eye {
 
 .macadam-dropdown-actions {
   position: relative;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.dropdown-trigger-btn {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 8px;
-  color: #4c566a;
+.macadam-dropdown-actions .dropdown-container {
+  position: relative;
+}
+
+.macadam-dropdown-actions .dropdown-container::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 0.5rem;
+}
+
+.fullscreen-icon-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.3s ease;
-}
-
-.macadam-dropdown-actions:hover .dropdown-trigger-btn {
-  color: #5c6ae2;
-}
-
-.dropdown-menu-list {
-  display: none !important;
-  position: absolute;
-  top: 100%;
-  right: 0;
-  min-width: 285px;
-  background-color: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 8px !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
-  list-style: none !important;
-  padding: 8px 0 !important;
-  margin: 4px 0 0 0 !important;
-  z-index: 9999 !important;
-  flex-direction: row !important;
-  align-items: flex-start !important;
-}
-
-.dropdown-menu-list::before {
-  content: "";
-  position: absolute;
-  top: -15px;
-  left: 0;
-  width: 100%;
-  height: 15px;
-}
-
-.dropdown-menu-list .icon-arrow-left {
-  display: inline-flex !important;
-  padding: 12px 0 0 12px !important;
-  font-size: 16px !important;
-  color: #4c566a !important;
+  color: var(--menu-icon);
   cursor: pointer;
+  transition: color 0.2s ease;
 }
 
-.dropdown-menu-lst-inner {
-  flex: 1 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 5px !important;
-}
-
-.macadam-dropdown-actions:hover .dropdown-menu-list {
-  display: flex !important;
-}
-
-.dropdown-menu-list .dropdown-item {
-  display: block !important;
-  width: 100% !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  float: none !important;
-  position: relative !important;
-}
-
-.dropdown-menu-list .dropdown-item a,
-.dropdown-menu-list .dropdown-item .pwg-button {
-  display: flex !important;
-  align-items: center !important;
-  padding: 8px 16px !important;
-  gap: 12px !important;
-  text-decoration: none !important;
-  font-size: 0.95rem !important;
-  font-weight: 400 !important;
-  background: none !important;
-  border: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-  text-align: left !important;
-  cursor: pointer !important;
-}
-
-.dropdown-menu-list .dropdown-item i,
-.dropdown-menu-list .dropdown-item .pwg-icon {
-  font-size: 1.2rem !important;
-  text-align: center !important;
-  display: inline-block !important;
-  position: static !important;
-  margin: 0 !important;
-}
-
-.dropdown-menu-list .dropdown-item .pwg-button-text {
-  display: inline !important;
-  color: inherit !important;
-  padding: 0 !important;
-}
-
-.dropdown-divider {
-  height: 1px;
-  background-color: #e2e8f0;
-  margin: 6px 0;
-  list-style: none;
-}
-
-.dropdown-menu-list .dropdown-item:hover .switchBox {
-  display: block !important;
-}
-
-.dropdown-menu-list .dropdown-item:hover > a,
-.dropdown-menu-list .dropdown-item:hover > a i,
-.dropdown-menu-list .dropdown-item:hover > a .pwg-button-text {
+.fullscreen-icon-container:hover,
+.fullscreen-icon-container:hover i {
   color: var(--menu-icon-hover) !important;
 }
 
-.dropdown-menu-list:has(.dropdown-item.has-switchbox:hover) > .icon-arrow-left {
+.js-picture-dropdown-trigger {
+  display: block;
+  padding: 8px;
+  line-height: 1;
+  color: var(--color-text-muted) !important;
+}
+
+.js-picture-dropdown-trigger i {
+  font-size: 1.5rem;
+  transition: color 0.3s ease;
+  color: var(--menu-icon);
+}
+
+.js-picture-dropdown-trigger:hover i,
+.macadam-dropdown-actions .dropdown-container:hover > .js-picture-dropdown-trigger i {
   color: var(--menu-icon-hover) !important;
 }
 
-.dropdown-item .switchBox::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: -60px;
-  width: 60px;
-  height: 100%;
-}
-
-.dropdown-item .switchBox {
+.macadam-dropdown-actions .dropdown-container > .album-dropdown-menu {
   display: none;
-  position: absolute !important;
-  right: 110% !important;
-  margin-right: 10px !important;
-  left: auto !important;
-  top: -10px !important;
-  width: 180px !important;
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
-  border-radius: 8px !important;
-  padding: 12px 0 !important;
-  z-index: 10000 !important;
-  font-family: sans-serif;
 }
 
-#derivativeSwitchBox .switchBoxTitle,
-#derivativeSwitchBox br,
-#derivativeSwitchBox .derivativeSizeDetails {
-  display: none !important;
+.macadam-dropdown-actions .dropdown-container:hover > .album-dropdown-menu {
+  display: block;
 }
 
-#derivativeSwitchBox a {
+.macadam-actions-zone .album-dropdown-menu .dropdown-item > a,
+.macadam-actions-zone .album-dropdown-menu .dropdown-item > .pwg-button,
+.macadam-actions-zone .album-dropdown-menu .dropdown-item > a i,
+.macadam-actions-zone .album-dropdown-menu .dropdown-item > .pwg-button i {
+  color: var(--color-brand-dark) !important;
+}
+
+.macadam-actions-zone .album-dropdown-menu .dropdown-item:hover > a,
+.macadam-actions-zone .album-dropdown-menu .dropdown-item:hover > .pwg-button,
+.macadam-actions-zone .album-dropdown-menu .dropdown-item:hover > a i,
+.macadam-actions-zone .album-dropdown-menu .dropdown-item:hover > .pwg-button i {
+  color: var(--color-brand-dark) !important;
+}
+
+.macadam-actions-zone .album-dropdown-menu .dropdown-item.plugin-injected > .pwg-button {
   display: flex !important;
   align-items: center;
-  padding: 10px 20px 10px 45px !important;
-  color: #2d3748 !important;
+  gap: 8px;
+  width: 100%;
+  color: var(--color-brand-dark) !important;
+  font-size: 0.9rem;
   text-decoration: none !important;
-  font-size: 14px !important;
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
+}
+
+.macadam-actions-zone .album-dropdown-menu .dropdown-item.plugin-injected .pwg-button-text {
+  display: inline !important;
+  color: inherit !important;
+  font-size: inherit;
+  line-height: 1.2;
+  margin-top: 6px;
+}
+
+.macadam-actions-zone .album-dropdown-menu .dropdown-item.has-switchbox {
   position: relative;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.macadam-actions-zone .album-dropdown-menu .dropdown-item.has-switchbox .switchBox {
+  display: none;
+  position: absolute !important;
+  right: calc(100% + 5px) !important;
+  top: -2px !important;
+  left: auto !important;
+  padding: 10px 0 !important;
+  background: var(--color-white) !important;
+  border: 1px solid var(--color-border-light) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 3px 7px var(--color-transparent-black-20) !important;
+  z-index: 10000 !important;
+}
+
+.macadam-actions-zone .album-dropdown-menu .dropdown-item.has-switchbox > a {
+  cursor: pointer;
+  flex: 1;
+}
+
+.macadam-actions-zone .album-dropdown-menu .dropdown-item.has-switchbox:has(#derivativeSwitchBox[style*="display: block"]) {
+  background-color: var(--color-brand-muted) !important;
+  color: var(--color-white) !important;
+}
+
+.macadam-actions-zone .album-dropdown-menu .dropdown-item.has-switchbox:has(#derivativeSwitchBox[style*="display: block"]) > a,
+.macadam-actions-zone .album-dropdown-menu .dropdown-item.has-switchbox:has(#derivativeSwitchBox[style*="display: block"]) > a i {
+  color: var(--color-white) !important;
+}
+
+.macadam-actions-zone .album-dropdown-menu:has(> .dropdown-item.has-switchbox #derivativeSwitchBox[style*="display: block"]) > i.index {
+  color: var(--color-brand-dark) !important;
+  display: block !important;
+}
+
+.macadam-actions-zone #derivativeSwitchBox a {
+  display: flex !important;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 30px;
+  padding: 5px 16px 5px 40px !important;
+  color: var(--color-brand-dark) !important;
+  font-size: 14px !important;
+  text-decoration: none !important;
+}
+
+.macadam-actions-zone #derivativeSwitchBox a:hover {
+  background-color: var(--color-surface-light);
+}
+
+.macadam-actions-zone #derivativeSwitchBox .switchCheck {
+  display: inline-block;
+  position: absolute;
+  left: 10px;
+  min-width: 20px;
+  color: var(--color-brand-muted);
+  font-size: 14px;
+}
+
+.macadam-actions-zone #derivativeSwitchBox .switchCheck i {
+  display: inline-block;
+  transform: translateY(4px);
+}
+
+.macadam-actions-zone #derivativeSwitchBox .derivativeSizeDetails {
+  margin-left: 4px;
+  color: var(--color-text-muted);
+  font-size: 12px;
 }
 
 #downloadSwitchBox a {
@@ -455,19 +575,9 @@ ul.macadam-info-list li i.icon-eye {
   justify-content: space-between;
 }
 
-#derivativeSwitchBox a:hover,
 #downloadSwitchBox a:hover {
-  background-color: #f7fafc !important;
-  color: #4a5568 !important;
-}
-
-#derivativeSwitchBox .switchCheck {
-  position: absolute !important;
-  left: 16px !important;
-  transform: translateY(11px) !important;
-  font-size: 14px !important;
-  color: #4c51bf !important;
-  z-index: 2;
+  background-color: var(--color-surface-light) !important;
+  color: var(--color-text-muted) !important;
 }
 
 #downloadSwitchBox ul {
@@ -480,18 +590,14 @@ ul.macadam-info-list li i.icon-eye {
   font-weight: bold;
   padding: 0 20px 10px 20px;
   font-size: 13px;
-  color: #4c566a;
-  border-bottom: 1px solid #e2e8f0;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border-light);
   margin-bottom: 5px;
 }
 
 #downloadSwitchBox .downloadformatDetails {
-  color: #718096 !important;
+  color: var(--color-text-soft) !important;
   font-size: 11px !important;
-}
-
-.dropdown-menu-lst-inner i {
-  font-size: 16px !important;
 }
 
 /* comment section on the sidebar  */
@@ -501,6 +607,7 @@ ul.macadam-info-list li i.icon-eye {
   flex-direction: column !important;
   width: 100% !important;
   gap: 24px !important;
+  padding: 0 !important;
 }
 
 #pictureCommentList {
@@ -508,6 +615,7 @@ ul.macadam-info-list li i.icon-eye {
   width: 100% !important;
   box-sizing: border-box !important;
   order: 1 !important;
+  padding: 0 !important;
 }
 
 #commentAdd {
@@ -517,7 +625,7 @@ ul.macadam-info-list li i.icon-eye {
   margin-top: 10px;
 }
 
-form#addComment {
+#commentAdd form {
   display: block !important;
   width: 100% !important;
   box-sizing: border-box !important;
@@ -526,8 +634,8 @@ form#addComment {
 #comments h3 {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #1e293b;
-  margin: 10px 0 15px 0 !important;
+  color: var(--color-text);
+  margin: 10px 0 !important;
 }
 
 ul.commentsList {
@@ -544,7 +652,7 @@ li.commentElement {
   display: block !important;
   width: 100% !important;
   box-sizing: border-box !important;
-  background-color: #f8fafc !important;
+  background-color: var(--color-surface-light) !important;
   border: none !important;
   border-radius: 12px !important;
   padding: 16px !important;
@@ -561,7 +669,7 @@ li.commentElement .description {
 
 li.commentElement .commentAuthor {
   font-weight: 600 !important;
-  color: #1e293b !important;
+  color: var(--color-text) !important;
   font-size: 0.9rem;
   margin-bottom: 6px;
   line-height: 1.4;
@@ -569,12 +677,12 @@ li.commentElement .commentAuthor {
 
 li.commentElement .commentAuthor a,
 li.commentElement .commentEmail a {
-  color: #1e293b !important;
+  color: var(--color-text) !important;
   text-decoration: none !important;
 }
 
 li.commentElement .commentDate {
-  color: #64748b !important;
+  color: var(--color-text-light) !important;
   font-size: 0.85rem;
   font-weight: 400 !important;
   font-style: italic;
@@ -590,7 +698,7 @@ li.commentElement blockquote {
 li.commentElement blockquote div {
   font-size: 0.9rem !important;
   line-height: 1.5 !important;
-  color: #334155 !important;
+  color: var(--color-text-slate) !important;
   font-style: normal !important;
 }
 
@@ -602,83 +710,106 @@ li.commentElement .actions {
   gap: 12px;
   margin-top: 10px;
   font-size: 0.8rem !important;
-  border-top: 1px solid #edf2f7;
   padding-top: 8px;
 }
 
 li.commentElement .actions a {
-  color: #64748b !important;
+  color: var(--color-brand-hover) !important;
   text-decoration: none !important;
   font-weight: 500;
   transition: color 0.15s ease;
 }
 
 li.commentElement .actions a:hover {
-  color: #5c6ae2 !important;
+  color: var(--color-brand-hover) !important;
 }
 
 li.commentElement .actions a[href*="delete"]:hover {
-  color: #ef4444 !important;
+  color: var(--color-danger) !important;
 }
 
 /* form comment */
 
-form#addComment p {
+#commentAdd h4 {
+  margin: 0 0 24px;
+  color: var(--color-text-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+#commentAdd p {
   margin: 0 0 14px 0 !important;
 }
 
-form#addComment label {
-  display: block;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #475569;
-  margin-bottom: 6px;
+#commentAdd .comment-field-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-form#addComment input[type="text"],
-form#addComment textarea {
+#commentAdd input[type="text"],
+#commentAdd textarea {
+  display: block;
   width: 100% !important;
   box-sizing: border-box !important;
-  padding: 12px 16px !important;
-  background-color: #f1f5f9 !important;
+  padding: 15px 20px !important;
+  background-color: #F2F2F2 !important;
   border: none !important;
-  border-radius: 10px !important;
-  font-size: 0.9rem !important;
-  color: #334155 !important;
+  border-radius: 7px !important;
+  font-size: 1.05rem !important;
+  color: var(--color-text) !important;
   font-family: inherit;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-form#addComment input[type="text"]:focus,
-form#addComment textarea:focus {
-  background-color: #e2e8f0 !important;
+#commentAdd input[type="text"]::placeholder,
+#commentAdd textarea::placeholder {
+  color: var(--color-text-gray-light);
+  opacity: 1;
+}
+
+#commentAdd textarea {
+  min-height: 224px;
+  resize: vertical;
+}
+
+#commentAdd input[type="text"]:focus,
+#commentAdd textarea:focus {
+  background-color: var(--color-border-light) !important;
   outline: none;
+  box-shadow: 0 0 0 2px var(--color-brand-pale);
 }
 
-form#addComment p:last-child {
+#commentAdd p:last-child {
   text-align: right !important;
   margin-bottom: 0 !important;
 }
 
-form#addComment input[type="submit"] {
-  background-color: #f1f5f9 !important;
-  color: #1e293b !important;
+#commentAdd input[type="submit"] {
+  background-color: #F2F2F2 !important;
+  color: var(--color-text) !important;
   font-weight: 600 !important;
   border: none !important;
-  padding: 10px 24px !important;
-  border-radius: 8px !important;
+  padding: 9px 23px !important;
+  border-radius: 7px !important;
   cursor: pointer !important;
-  font-size: 0.9rem !important;
+  font-size: 14px !important;
   transition:
     background-color 0.2s ease,
     transform 0.1s ease;
 }
 
-form#addComment input[type="submit"]:hover {
-  background-color: #e2e8f0 !important;
+#commentAdd input[type="submit"]:hover {
+  background-color: var(--color-border-light) !important;
 }
 
-form#addComment input[type="submit"]:active {
+#commentAdd input[type="submit"]:active {
   transform: scale(0.98);
 }
 
@@ -691,7 +822,7 @@ form#addComment input[type="submit"]:active {
   right: 20px;
   background: none;
   border: none;
-  color: #f6f7ff;
+  color: var(--color-surface-blue);
   cursor: pointer;
   flex-direction: column;
   align-items: center;
@@ -710,7 +841,7 @@ form#addComment input[type="submit"]:active {
 }
 
 .macadam-picture-container.macadam-in-fullscreen {
-  background-color: #0b0f19 !important;
+  background-color: var(--color-text-darkest) !important;
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -722,11 +853,47 @@ form#addComment input[type="submit"]:active {
 .macadam-photo-display.display-in-fullscreen {
   background: none !important;
   border: none !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
 }
 
 .macadam-nav-arrow.arrow-fullscreen {
-  background-color: #f6f7ff !important;
-  color: #090d31 !important;
+  background-color: var(--color-surface-blue) !important;
+  color: var(--color-brand-dark) !important;
+  cursor: pointer;
+}
+
+.macadam-in-fullscreen .macadam-nav-arrow:not(.arrow-mobile) {
+  position: absolute;
+  top: 50%;
+  z-index: 20;
+  transform: translateY(-50%);
+}
+
+.macadam-in-fullscreen .macadam-nav-arrow.arrow-left:not(.arrow-mobile) {
+  left: 20px;
+}
+
+.macadam-in-fullscreen .macadam-nav-arrow.arrow-right:not(.arrow-mobile) {
+  right: 20px;
+}
+
+.macadam-in-fullscreen #theImage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: pan-y;
+}
+
+.macadam-in-fullscreen #theImage img {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: calc(100vw - 160px) !important;
+  max-height: 90vh !important;
+  object-fit: contain !important;
 }
 
 .macadam-in-fullscreen .macadam-index-bar,
@@ -756,8 +923,15 @@ form#addComment input[type="submit"]:active {
   display: flex;
 }
 
-.arrow-mobile{
+.arrow-mobile,
+.macadam-header-search{
   display: none !important;
+}
+
+#breadcrumb h2 a:hover,
+#breadcrumb h2 a:hover i,
+#breadcrumb h2 a:hover i::before {
+  color: var(--menu-icon-hover) !important;
 }
 
 /* MEDIA  */
@@ -772,11 +946,12 @@ form#addComment input[type="submit"]:active {
     width: 100% !important;
     height: auto !important;
     border-left: none !important;
-    border-top: 1px solid #e2e8f0 !important;
+    border-top: 1px solid var(--color-border-light) !important;
   }
   .macadam-carousel-strip {
     justify-content: flex-start !important;
     overflow-x: auto !important;
+    padding-right: 15px !important;
   }
 
   #breadcrumb .intermediate-album a:nth-of-type(1) {
@@ -824,6 +999,7 @@ form#addComment input[type="submit"]:active {
 
   .carousel-strip-container{
     position: relative !important;
+    width: 100% !important;
   }
 
   .arrow-mobile{
@@ -838,5 +1014,9 @@ form#addComment input[type="submit"]:active {
 
   .arrow-mobile.arrow-left{
     left: 0 !important;
+  }
+
+  .macadam-in-fullscreen .macadam-nav-arrow:not(.arrow-mobile) {
+    display: flex !important;
   }
 }

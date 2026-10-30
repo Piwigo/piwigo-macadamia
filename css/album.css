@@ -10,20 +10,28 @@
 
 .macadam-album-card {
   display: flex;
-  background: #ffffff;
-  border: 1px solid #c1c1c1;
+  box-sizing: border-box;
+  background: var(--color-white);
+  border: 1px solid var(--color-border-dark);
   border-radius: 5px;
-  overflow: hidden;
+  overflow: visible;
   height: 200px;
+  min-width: 0;
   cursor: pointer;
 }
 
 .macadam-album-thumbs {
   display: flex;
   width: 240px;
-  height: 100%;
+  height: calc(100% - 2px);
+  align-self: center;
+  box-sizing: border-box;
   text-decoration: none !important;
   flex-shrink: 0;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: 4px 0 0 4px;
 }
 
 .main-thumb-container {
@@ -38,7 +46,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  background-color: #f7d6d6;
+  background-color: var(--color-accent-soft);
 }
 
 .sub-thumbs-container {
@@ -46,6 +54,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-width: 0;
 }
 
 .thumb-sub-block {
@@ -55,14 +64,19 @@
   object-fit: cover;
   min-height: 0;
   transition: opacity 0.2s ease;
+  border-left: 1px solid var(--color-white);
+}
+
+.thumb-sub-block:first-child {
+  border-bottom: 1px solid var(--color-white);
 }
 
 .thumb-sub-block.sub-orange {
-  background-color: #f4a261;
+  background-color: var(--color-accent-peach);
 }
 
 .thumb-sub-block.sub-beige {
-  background-color: #e9c46a;
+  background-color: var(--color-accent-yellow);
 }
 
 .macadam-album-infos {
@@ -71,7 +85,7 @@
   flex-grow: 1;
   padding: 20px 24px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .macadam-album-header {
@@ -92,7 +106,7 @@
 }
 
 .album-title a {
-  color: #3c3c3c !important;
+  color: var(--color-text-gray) !important;
   text-decoration: none !important;
 }
 
@@ -102,7 +116,7 @@
   font-weight: 400;
   line-height: 100%;
   letter-spacing: 0;
-  color: #7e7e7e;
+  color: var(--color-text-gray-light);
 }
 
 .album-actions-trigger {
@@ -117,7 +131,7 @@
   font-weight: 400;
   line-height: 100%;
   letter-spacing: 0;
-  color: #7e7e7e;
+  color: var(--color-text-gray-light);
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -136,11 +150,27 @@
   opacity: 0.8;
 }
 
-.album-footer-icon .album-sub-toggle i,
 .album-actions-trigger i {
   font-size: 16px;
   transition: color 0.3s ease;
   color: var(--menu-icon);
+}
+
+.album-footer-icon .album-sub-toggle  {
+  font-size: 10px;
+  transition: color 0.3s ease;
+  color: var(--menu-icon);
+  margin-right: 11px;
+}
+
+.album-footer-icon .album-sub-toggle i {
+  display: inline-block;
+  transition: transform 0.25s ease;
+}
+
+.album-footer-icon .album-sub-toggle.open i {
+  transform: rotate(180deg);
+  margin-right: -6px !important;
 }
 
 .album-footer-icon .album-sub-toggle i:hover,
@@ -166,18 +196,19 @@
   display: flex;
   flex-direction: row;
   height: 200px;
-  background: #ffffff;
-  overflow: hidden;
+  background: var(--color-white);
+  overflow: visible;
   width: 100%;
   margin-bottom: 24px;
 }
 
 .macadam-albums-container.macadam-main-grid-active .macadam-album-thumbs {
   min-width: 280px;
-  height: 100%;
+  max-width: 100%;
+  height: calc(100% - 2px);
   flex-shrink: 0;
   display: flex;
-  border-right: 1px solid #c1c1c1;
+  border-right: 1px solid var(--color-border-dark);
 }
 
 .macadam-albums-container.macadam-main-grid-active .macadam-album-infos {
@@ -206,8 +237,11 @@
 
 .macadam-albums-container.macadam-main-grid-active.view-grid .macadam-album-thumbs {
   width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100%;
   height: 165px !important;
-  border-bottom: 1px solid #c1c1c1;
+  border-bottom: 1px solid var(--color-border-dark);
+  border-radius: 4px 4px 0 0;
 }
 
 .macadam-albums-container.macadam-main-grid-active.view-grid .macadam-album-infos {
@@ -245,9 +279,9 @@
   right: 0;
   z-index: 100;
   min-width: 300px;
-  background-color: #ffffff;
+  background-color: var(--color-white);
   border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px var(--color-transparent-black-15);
   padding: 6px 0;
   margin-top: 5px;
 }
@@ -262,7 +296,7 @@
   align-items: center;
   gap: 12px;
   padding: 10px 16px;
-  color: #090D31;
+  color: var(--color-brand-dark);
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
@@ -271,14 +305,14 @@
 
 
 .album-dropdown-menu .dropdown-item:hover {
-  background-color: #f1f5f9;
-  color: #090D31;
+  background-color: var(--color-surface-pale);
+  color: var(--color-brand-dark);
 }
 
 
 .album-dropdown-menu .dropdown-item i {
   font-size: 1.1rem;
-  color: #090D31;
+  color: var(--color-brand-dark);
   width: 20px;
   text-align: center;
 }
@@ -306,7 +340,8 @@
     min-width: 0 !important;
     width: 100% !important;
     border-right: none !important;
-    border-bottom: 1px solid #c1c1c1 !important;
+    border-bottom: 1px solid var(--color-border-dark) !important;
+    border-radius: 4px 4px 0 0;
   }
 
   .macadam-album-card,

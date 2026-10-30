@@ -30,8 +30,8 @@
   </title>
   <link rel="shortcut icon" type="image/x-icon" href="{$ROOT_URL}{$themeconf.icon_dir}/favicon.ico">
 
-  <link rel="start" title="{'Home'|translate}" href="{$U_HOME}">
-  <link rel="search" title="{'Search'|translate}" href="{$ROOT_URL}search.php">
+  <link rel="start" href="{$U_HOME}">
+  <link rel="search" href="{$ROOT_URL}search.php">
 
   {if isset($U_PREFETCH)    }
     <link rel="prefetch" href="{$U_PREFETCH}">
@@ -86,21 +86,19 @@
   <nav class="macadam-sidebar-nav">
     <div class="mobile-menu-overlay"></div>
     <div class="sidebar-menu-links">
-      <a href="{$U_HOME}" class="sidebar-icon-link" title="{'Home'|translate}"><i class="icon-home"></i></a>
-      <a href="{$ROOT_URL}search.php" class="sidebar-icon-link" title="{'Search'|translate}"><i
+      <a href="{$U_HOME}" class="sidebar-icon-link"><i class="icon-home"></i></a>
+      <a href="{$ROOT_URL}search.php" class="sidebar-icon-link"><i
           class="icon-lens"></i></a>
 
       {* Dropdown container for Albums *}
       <div class="sidebar-dropdown-container sidebar-dropdown-container-album">
-        <a href="#" onclick="return false;" class="sidebar-icon-link sidebar-icon-link-drop"
-          title="{'Albums'|translate}"><i class="icon-structure"></i></a>
+        <a onclick="return false;" class="sidebar-icon-link sidebar-icon-link-drop"><i class="icon-structure"></i></a>
 
         <div class="sidebar-dropdown-menu album-menu">
           <i class="icon-cross usable-icon mobile-close-btn"></i>
           <div class="dropdown-menu-title menu-title-album-w-toc">{'Albums'|translate}
-            <a href="{$ROOT_URL}index.php?/table_of_content" class="btn-table-of-content"
-              title="{'Table of content'|translate}">
-              <i class="icon-structure"></i>
+            <a href="{$ROOT_URL}index.php?/table_of_content" class="btn-table-of-content">
+              <i class="icon-enter-fullscreen"></i>
             </a>
           </div>
           <ul class="album-dropdown-list">
@@ -116,15 +114,15 @@
                       {else}
                         <span class="album-toggle-disabled"><i class="icon-arrow-right"></i></span>
                       {/if}
-                      <a href="{$album.URL}" title="{$album.name|escape}">{$album.name}</a>
+                      <a href="{$album.URL}">{$album.name}</a>
                       <div class="album-counts">
-                        {if $album.count_categories > 0}
-                          <span class="album-count" title="{'Albums'|translate}">{$album.count_categories}<i
-                              class="icon-folder"></i></span>
-                        {/if}
                         {if $album.count_images > 0}
-                          <span class="album-count" title="{'Images'|translate}">{$album.count_images}<i
+                          <span class="album-count">{$album.count_images}<i
                               class="icon-picture"></i></span>
+                        {/if}
+                        {if $album.count_categories > 0}
+                          <span class="album-count">{$album.count_categories}<i
+                              class="icon-folder"></i></span>
                         {/if}
                       </div>
                     </div>
@@ -141,7 +139,7 @@
                 {call name=render_album_list albums=$MACADAM_HEADER_ALBUMS depth=0}
               {else}
                 <li>
-                  <div class="album-item-row"><a href="#">{'No albums'|translate}</a></div>
+                  <div class="album-item-row"><a>{'No albums'|translate}</a></div>
                 </li>
               {/if}
           </ul>
@@ -149,9 +147,9 @@
           {if isset($MACADAM_TOTAL_ALBUMS) && $MACADAM_TOTAL_ALBUMS > 0}
             <div class="dropdown-menu-footer">
               <div class="album-item-row" style="gap: 35px;">
-                <span class="" title="{'Total albums'|translate}">{$MACADAM_TOTAL_ALBUMS} <i
+                <span class="">{$MACADAM_TOTAL_ALBUMS} <i
                     class="icon-folder"></i></span>
-                <span class="" title="{'Total images'|translate}">{$MACADAM_TOTAL_IMAGES} <i
+                <span class="">{$MACADAM_TOTAL_IMAGES} <i
                     class="icon-picture"></i></span>
               </div>
             </div>
@@ -159,11 +157,11 @@
         </div>
       </div>
 
-      {* <a href="{$U_MODE_CREATED|default:" `$ROOT_URL`index.php?/created-monthly"}" class="sidebar-icon-link" title="{'Discovery'|translate}"><i class="icon-add"></i></a> *}
+      {* <a href="{$U_MODE_CREATED|default:" `$ROOT_URL`index.php?/created-monthly"}" class="sidebar-icon-link"><i class="icon-add"></i></a> *}
 
       {* Dropdown container for Explore *}
       <div class="sidebar-dropdown-container">
-        <a href="" class="sidebar-icon-link sidebar-icon-link-drop" title="{'Explore'|translate}">
+        <a class="sidebar-icon-link sidebar-icon-link-drop">
           <i class="icon-add"></i>
         </a>
         <div class="sidebar-dropdown-menu">
@@ -174,7 +172,7 @@
               {foreach from=$blocks.mbSpecials->data item=link}
                 <li>
                   <div class="tag-item-row">
-                    <a href="{$link.URL}" title="{$link.TITLE}" {if isset($link.REL)} {$link.REL}{/if}>
+                    <a href="{$link.URL}" {if isset($link.REL)} {$link.REL}{/if}>
                       {$link.NAME}
                     </a>
                   </div>
@@ -183,7 +181,7 @@
             {/if}
             <li>
               <div class="tag-item-row">
-                <a href="{$ROOT_URL}index.php?/table_of_content" title="{'Table of content'|translate}">
+                <a href="{$ROOT_URL}index.php?/table_of_content">
                   {'Table of content'|translate}</a>
               </div>
             </li>
@@ -195,7 +193,7 @@
               {assign var='tag_link' value=$blocks.mbMenu->data.tags}
               <li>
                 <div class="tag-item-row">
-                  <a href="{$tag_link.URL}" title="{$tag_link.TITLE}">
+                  <a href="{$tag_link.URL}">
                     {$tag_link.NAME}
                     {if isset($tag_link.COUNTER) and $tag_link.COUNTER > 0}
                       <span class="menu-counter">{$tag_link.COUNTER}</span>
@@ -208,7 +206,7 @@
               {assign var='comment_link' value=$blocks.mbMenu->data.comments}
               <li>
                 <div class="tag-item-row">
-                  <a href="{$comment_link.URL}" title="{$comment_link.TITLE}">
+                  <a href="{$comment_link.URL}">
                     {$comment_link.NAME}
                     {if isset($comment_link.COUNTER) and $comment_link.COUNTER > 0}
                       <span class="menu-counter">{$comment_link.COUNTER}</span>
@@ -220,7 +218,7 @@
             {if isset($MACADAM_HEADER_CONTACT)}
               <li>
                 <div class="tag-item-row">
-                  <a href="{$MACADAM_HEADER_CONTACT.URL}" title="{$MACADAM_HEADER_CONTACT.TITLE}">
+                  <a href="{$MACADAM_HEADER_CONTACT.URL}">
                     {$MACADAM_HEADER_CONTACT.NAME}
                   </a>
                 </div>
@@ -232,7 +230,7 @@
 
       {* Dropdown container for Tags *}
       <div class="sidebar-dropdown-container sidebar-dropdown-container-tags">
-        <a href="" class="sidebar-icon-link sidebar-icon-link-drop" title="{'Tags'|translate}"><i
+        <a class="sidebar-icon-link sidebar-icon-link-drop"><i
             class="icon-tags"></i></a>
         <div class="sidebar-dropdown-menu">
           <i class="icon-cross usable-icon mobile-close-btn"></i>
@@ -246,7 +244,7 @@
               {/foreach}
             {else}
               <li>
-                <div class="tag-item-row"><a href="#">{'No tags'|translate}</a></div>
+                <div class="tag-item-row"><a>{'No tags'|translate}</a></div>
               </li>
             {/if}
           </ul>
@@ -256,7 +254,7 @@
       {* Dropdown container for Collections / Favorites *}
       <div class="sidebar-dropdown-container sidebar-dropdown-container-collections">
         {if isset($user_collections)}
-          <a href="" class="sidebar-icon-link-drop sidebar-icon-link" title="{'Collections'|translate}"><i
+          <a class="sidebar-icon-link-drop sidebar-icon-link"><i
               class="icon-star"></i></a>
           <div class="sidebar-dropdown-menu">
             <i class="icon-cross usable-icon mobile-close-btn"></i>
@@ -270,13 +268,13 @@
                 {/foreach}
               {else}
                 <li>
-                  <div class="tag-item-row"><a href="#">{'No collections'|translate}</a></div>
+                  <div class="tag-item-row"><a>{'No collections'|translate}</a></div>
                 </li>
               {/if}
             </ul>
           </div>
         {else}
-          <a href="" class="sidebar-icon-link-drop sidebar-icon-link" title="{'Favorites'|translate}"><i
+          <a class="sidebar-icon-link-drop sidebar-icon-link"><i
               class="icon-star"></i></a>
           <div class="sidebar-dropdown-menu">
             <i class="icon-cross usable-icon mobile-close-btn"></i>
@@ -290,7 +288,7 @@
                 {/foreach}
               {else}
                 <li>
-                  <div class="tag-item-row"><a href="#">{'No favorites'|translate}</a></div>
+                  <div class="tag-item-row"><a>{'No favorites'|translate}</a></div>
                 </li>
               {/if}
             </ul>
@@ -299,12 +297,11 @@
       </div>
 
       {if isset($U_LOGIN_REGISTER)}
-        <a href="{$U_LOGIN_REGISTER}" class="sidebar-icon-link" title="{'Login'|translate}"><i
+        <a href="{$U_LOGIN_REGISTER}" class="sidebar-icon-link"><i
             class="icon-person"></i></a>
       {else}
         <div class="sidebar-dropdown-container">
-          <a href="#" onclick="return false;" class="sidebar-icon-link sidebar-icon-link-drop"
-            title="{'Profile'|translate}"><i class="icon-person"></i></a>
+          <a  onclick="return false;" class="sidebar-icon-link sidebar-icon-link-drop"><i class="icon-person"></i></a>
           <div class="sidebar-dropdown-menu">
             <i class="icon-cross usable-icon mobile-close-btn"></i>
             <div class="dropdown-menu-title">{'Account'|translate}</div>
@@ -324,7 +321,7 @@
                 {assign var='notif_link' value=$blocks.mbMenu->data.rss}
                 <li>
                   <div class="tag-item-row">
-                    <a href="{$notif_link.URL}" title="{$notif_link.TITLE}" {if isset($notif_link.REL)}
+                    <a href="{$notif_link.URL}" {if isset($notif_link.REL)}
                       {$notif_link.REL}{/if}>
                       {$notif_link.NAME}
                     </a>
@@ -350,9 +347,6 @@
           </div>
         </div>
       {/if}
-      {* {if isset($U_ADMIN)}
-        <a href="{$U_ADMIN}" class="sidebar-icon-link" title="{'Administration'|translate}">⚙️</a>
-      {/if} *}
     </div>
 
     {* Script to handle sub-albums toggle on click *}
@@ -381,7 +375,7 @@
             container.addEventListener('mouseenter', function() {
               if (window.innerWidth > 768) {
                 var rect = container.getBoundingClientRect();
-                menu.style.top = rect.top - 10 + 'px';
+                menu.style.top = rect.top - 21 + 'px';
               }
             });
 
@@ -434,7 +428,8 @@
 
   <div id="the_page" class="macadam-main-container">
 
-    <div id="theHeader" class="macadam-header-banner {if $BODY_ID == 'thePicturePage'}picture-header-only{/if}">
+    <div id="theHeader" class="macadam-header-banner {if $BODY_ID == 'thePicturePage'}picture-header-only{/if}"
+      style="height: {$MACADAM_HEADER_HEIGHT|escape:'html'};{if !empty($MACADAM_HEADER_IMAGE_URL)} background-image: url('{$MACADAM_HEADER_IMAGE_URL|escape:'html'}');{/if}">
       <div class="macadam-header-content">
 
         {if $BODY_ID != 'thePicturePage'}
@@ -446,12 +441,6 @@
             <i class="search-icon icon-lens"></i>
             <input type="text" name="q" placeholder="Search" autocomplete="off">
           </form>
-
-          {if $BODY_ID == 'thePicturePage'}
-            <span class="fullscreen-icon-container" id="macadam-fullscreen-toggle" title="Plein écran">
-              <i class="icon-enter-fullscreen"></i>
-            </span>
-          {/if}
 
         </div>
 

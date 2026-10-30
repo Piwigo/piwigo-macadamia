@@ -3,9 +3,9 @@
 /*
 Theme Name: macadam
 Version: 0.1
-Description: My very first theme
+Description: DAM
 Theme URI: http://piwigo.org/ext/extension_view.php?eid=347
-Author: SkatDoesCode
+Author: Piwigo Team
 Author URI: http://piwigo.org/
 */
 
@@ -16,9 +16,12 @@ $themeconf = array(
 
 load_language('theme.lang', PHPWG_THEMES_PATH . 'macadam/');
 add_event_handler('loc_begin_index', 'macadam_get_header_albums');
+add_event_handler('loc_begin_picture', 'macadam_get_header_albums');
+add_event_handler('loc_begin_picture', 'macadam_load_picture_menubar');
 add_event_handler('loc_end_picture', 'macadam_get_picture_thumbnails');
 add_event_handler('loc_begin_page_header', 'macadam_get_header_albums');
 add_event_handler('loc_begin_index', 'macadam_register_smarty_functions');
+add_event_handler('loc_begin_picture', 'macadam_register_smarty_functions');
 add_event_handler('loc_begin_page_header', 'macadam_register_smarty_functions');
 add_event_handler('loc_end_index_thumbnails', 'macadam_get_thumbnail_details');
 
@@ -26,6 +29,58 @@ add_event_handler('loc_begin_page_header', 'macadam_chronology_month_header_fall
 
 add_event_handler('loc_begin_index', 'macadam_toc_section_init');
 add_event_handler('loc_end_index', 'macadam_toc_page');
+add_event_handler('loc_begin_index', 'macadam_assign_layout');
+add_event_handler('loc_begin_picture', 'macadam_assign_layout');
+add_event_handler('loc_begin_page_header', 'macadam_assign_layout');
+
+function macadam_load_picture_menubar()
+{
+  include_once(PHPWG_ROOT_PATH . 'include/menubar.inc.php');
+}
+
+function macadam_assign_layout()
+{
+  global $conf, $template, $user;
+
+  $options = isset($conf['macadam']) ? safe_unserialize($conf['macadam']) : array();
+  $default_layout = (is_array($options) && isset($options['default_layout']))
+    ? $options['default_layout']
+    : 'grid';
+
+  if (!in_array($default_layout, array('grid', 'list'), true)) {
+    $default_layout = 'grid';
+  }
+
+  $template->assign('MACADAM_DEFAULT_LAYOUT', $default_layout);
+
+  $header_image_url = '';
+  $header_image_id = isset($options['header_image_id']) ? intval($options['header_image_id']) : 0;
+  if ($header_image_id > 0) {
+    $query = '
+SELECT i.id, i.path, i.representative_ext
+  FROM ' . IMAGES_TABLE . ' i
+    INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' ic ON ic.image_id = i.id
+    INNER JOIN ' . USER_CACHE_CATEGORIES_TABLE . ' uc ON uc.cat_id = ic.category_id
+  WHERE i.id = ' . $header_image_id . '
+    AND uc.user_id = ' . intval($user['id']) . '
+  LIMIT 1
+;';
+    $result = pwg_query($query);
+    if ($result && $row = pwg_db_fetch_assoc($result)) {
+      $header_image_url = DerivativeImage::url(IMG_LARGE, new SrcImage($row));
+    }
+  }
+
+  $template->assign('MACADAM_HEADER_IMAGE_URL', $header_image_url);
+
+  $header_height_mode = (isset($options['header_height_mode'])
+    && $options['header_height_mode'] === 'fullscreen') ? 'fullscreen' : 'pixels';
+  $header_height = isset($options['header_height']) ? intval($options['header_height']) : 250;
+  $header_height = min(2000, max(100, $header_height));
+  $template->assign('MACADAM_HEADER_HEIGHT', $header_height_mode === 'fullscreen'
+    ? '100vh'
+    : $header_height . 'px');
+}
 
 function macadam_chronology_month_header_fallback(){
   global $template, $page;
@@ -302,9 +357,12 @@ SELECT id, name, file, path
       $src_image = new SrcImage($img);
       $derivative = new DerivativeImage(IMG_SQUARE, $src_image);
       $src_url = $derivative->get_url();
+      $full_derivative = new DerivativeImage(IMG_LARGE, $src_image);
+      $full_src_url = $full_derivative->get_url();
     } else {
       // Fallback baseline image reference path mapping
       $src_url = preg_replace('#^./#', '', $img['path']); 
+      $full_src_url = $src_url;
     }
 
     $macadam_thumbs[] = array(
@@ -312,6 +370,7 @@ SELECT id, name, file, path
       'TITLE' => !empty($img['name']) ? $img['name'] : $img['file'],
       'URL' => $url,
       'SRC' => $src_url,
+      'FULL_SRC' => $full_src_url,
     );
   }
 
@@ -319,7 +378,16 @@ SELECT id, name, file, path
 }
 
 function macadam_get_thumbnail_details($tpl_thumbnails) {
+  global $conf;
+
   if (!is_array($tpl_thumbnails) || empty($tpl_thumbnails)) return $tpl_thumbnails;
+
+  $thumbnail_metadata_fields = array('format', 'filesize', 'date_creation', 'author', 'date_available');
+  $options = isset($conf['macadam']) ? safe_unserialize($conf['macadam']) : array();
+  $thumbnail_metadata = is_array($options) && isset($options['thumbnail_metadata'])
+    && is_array($options['thumbnail_metadata'])
+    ? array_values(array_intersect($thumbnail_metadata_fields, $options['thumbnail_metadata']))
+    : array('format', 'filesize');
 
   $image_ids = array();
   foreach ($tpl_thumbnails as $thumb) {
@@ -331,7 +399,7 @@ function macadam_get_thumbnail_details($tpl_thumbnails) {
   if (empty($image_ids)) return $tpl_thumbnails;
 
   $query = '
-SELECT id, file, filesize
+SELECT id, file, filesize, date_creation, author, date_available
   FROM '.IMAGES_TABLE.'
   WHERE id IN ('.implode(',', $image_ids).')
 ;';
@@ -344,13 +412,35 @@ SELECT id, file, filesize
   foreach ($tpl_thumbnails as &$thumb) {
     if (isset($thumb['id']) && isset($details[$thumb['id']])) {
       $file = $details[$thumb['id']]['file'];
-      $thumb['FILE_EXT'] = pathinfo($file, PATHINFO_EXTENSION);
-      
-      $filesize = $details[$thumb['id']]['filesize'];
-      if (is_numeric($filesize) && $filesize > 0) {
-        // Piwigo stocke la taille en KB. On convertit en MB si c'est plus grand que 1024 KB.
-        $thumb['FILESIZE'] = ($filesize > 1024) ? round($filesize / 1024, 1) . ' MB' : $filesize . ' KB';
+      $metadata = array();
+      if (in_array('format', $thumbnail_metadata, true)) {
+        $metadata['format'] = strtoupper(pathinfo($file, PATHINFO_EXTENSION));
       }
+
+      $filesize = $details[$thumb['id']]['filesize'];
+      if (in_array('filesize', $thumbnail_metadata, true) && is_numeric($filesize) && $filesize > 0) {
+        // Piwigo stocke la taille en KB. On convertit en MB si c'est plus grand que 1024 KB.
+        $metadata['filesize'] = ($filesize > 1024) ? round($filesize / 1024, 1) . ' MB' : $filesize . ' KB';
+      }
+      if (in_array('date_creation', $thumbnail_metadata, true)
+        && !empty($details[$thumb['id']]['date_creation'])) {
+        $metadata['date_creation'] = format_date(
+          $details[$thumb['id']]['date_creation'],
+          array('day', 'month', 'year')
+        );
+      }
+      if (in_array('author', $thumbnail_metadata, true)
+        && !empty($details[$thumb['id']]['author'])) {
+        $metadata['author'] = $details[$thumb['id']]['author'];
+      }
+      if (in_array('date_available', $thumbnail_metadata, true)
+        && !empty($details[$thumb['id']]['date_available'])) {
+        $metadata['date_available'] = format_date(
+          $details[$thumb['id']]['date_available'],
+          array('day', 'month', 'year')
+        );
+      }
+      $thumb['MACADAM_METADATA'] = array_values(array_filter($metadata));
     }
   }
   unset($thumb);

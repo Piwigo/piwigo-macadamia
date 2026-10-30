@@ -21,21 +21,21 @@
     <div class="macadam-actions-zone">
       <ul>
         {if isset($U_MODE_POSTED)}
-          <li><a href="{$U_MODE_POSTED}&amp;view=month" title="{'Calendar'|translate}"><i class="icon-calendar"></i></a>
+          <li><a href="{$U_MODE_POSTED}&amp;view=month"><i class="icon-calendar"></i></a>
           </li>
         {elseif isset($U_MODE_CREATED)}
-          <li><a href="{$U_MODE_CREATED}&amp;view=month" title="{'Calendar'|translate}"><i class="icon-calendar"></i></a>
+          <li><a href="{$U_MODE_CREATED}&amp;view=month"><i class="icon-calendar"></i></a>
           </li>
         {/if}
 
         <li>
-          <a id="toggleLayoutLink" title="{'Change layout'|translate}" style="cursor: pointer;"><i
+          <a id="toggleLayoutLink" style="cursor: pointer;"><i
               class="icon-grid"></i></a>
         </li>
 
         {if isset($U_EDIT)}
           <li class="dropdown-container">
-            <a href="#" class="js-album-dropdown-trigger" title="{'Album actions'|translate}"
+            <a href="#" class="js-album-dropdown-trigger"
               style="cursor: pointer; color: inherit;">
               <i class="icon-wheel"></i>
             </a>
@@ -44,7 +44,7 @@
               {if !empty($image_derivatives)}
                 <div class="dropdown-item-sizes">
                   {strip}
-                    <a id="derivativeSwitchLink" title="{'Photo sizes'|@translate}" class="dropdown-item option-with-submenu"
+                    <a id="derivativeSwitchLink" class="dropdown-item option-with-submenu"
                       rel="nofollow">
                       <i class="icon-photo-size"></i>
                       <span>{'Photo sizes'|@translate}</span>
@@ -68,7 +68,7 @@
 
               {if !empty($image_orders)}
                 <div class="dropdown-item-sort">
-                  <a id="sortOrderLink" class="dropdown-item gallery-icon-th-large" title="{'Sort order'|@translate}"
+                  <a id="sortOrderLink" class="dropdown-item gallery-icon-th-large"
                     rel="nofollow">
                     <i class="icon-sort"></i> <span>{'Sort order'|@translate}</span>
                   </a>
@@ -90,7 +90,7 @@
               {/if}
 
               {if isset($U_SLIDESHOW)}
-                <a href="{$U_SLIDESHOW}" title="{'slideshow'|@translate}" class="dropdown-item btn-slideshow"
+                <a href="{$U_SLIDESHOW}" class="dropdown-item btn-slideshow"
                   rel="nofollow">
                   <i class="icon-play"></i>
                   <span>{'slideshow'|@translate}</span>
@@ -104,7 +104,7 @@
             </div>
           </li>
         {elseif isset($U_ADMIN)}
-          <li><a href="{$U_ADMIN}" class="gallery-icon-cog" title="{'Administration'|translate}"><i
+          <li><a href="{$U_ADMIN}" class="gallery-icon-cog"><i
                 class="icon-wheel"></i></a></li>
         {/if}
       </ul>
@@ -118,8 +118,7 @@
   {if $display_mode == 'cloud' and isset($tags)}
     <div id="fullTagCloud">
       {foreach from=$tags item=tag}
-        <span><a href="{$tag.URL}" class="tagLevel{$tag.level}"
-            title="{$tag.counter|@translate_dec:'%d photo':'%d photos'}">{$tag.name}</a></span>
+        <span><a href="{$tag.URL}" class="tagLevel{$tag.level}">{$tag.name}</a></span>
       {/foreach}
     </div>
   {/if}
@@ -134,7 +133,7 @@
               <table class="tagLetterContent">
                 {foreach from=$letter.tags item=tag}
                   <tr class="tagLine">
-                    <td><a href="{$tag.URL}" title="{$tag.name}">{$tag.name}</a></td>
+                    <td><a href="{$tag.URL}">{$tag.name}</a></td>
                     <td class="nbEntries">{$tag.counter|@translate_dec:'%d photo':'%d photos'}</td>
                   </tr>
                 {/foreach}

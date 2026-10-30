@@ -27,21 +27,23 @@
     <div class="macadam-actions-zone">
       <ul>
         {if isset($U_MODE_POSTED)}
-          <li><a href="{$U_MODE_POSTED}&amp;view=month" title="{'Calendar'|translate}"><i class="icon-calendar"></i></a>
+          <li><a href="{$U_MODE_POSTED}&amp;view=month"><i class="icon-calendar"></i></a>
           </li>
         {elseif isset($U_MODE_CREATED)}
-          <li><a href="{$U_MODE_CREATED}&amp;view=month" title="{'Calendar'|translate}"><i class="icon-calendar"></i></a>
+          <li><a href="{$U_MODE_CREATED}&amp;view=month"><i class="icon-calendar"></i></a>
           </li>
         {/if}
 
-        <li>
-          <a id="toggleLayoutLink" title="{'Change layout'|translate}" style="cursor: pointer;"><i
-              class="icon-grid"></i></a>
-        </li>
+        {if !empty($category_thumbnails)}
+          <li>
+            <a id="toggleLayoutLink" style="cursor: pointer;"><i
+                class="icon-grid"></i></a>
+          </li>
+        {/if}
 
         {* {if !empty($image_orders)}
           <li>
-            <a id="sortOrderLink" class="gallery-icon-th-large" title="{'Sort order'|@translate}" rel="nofollow">🔢</a>
+            <a id="sortOrderLink" class="gallery-icon-th-large" rel="nofollow">🔢</a>
             <div id="sortOrderBox" class="switchBox">
               <div class="switchBoxTitle">{'Sort order'|@translate}</div>
               {foreach from=$image_orders item=image_order name=loop}
@@ -59,29 +61,27 @@
           </li>
         {/if} *}
 
-        {if isset($U_EDIT)}
+        {if !empty($U_EDIT)}
           <li class="dropdown-container">
-            <a href="#" class="js-album-dropdown-trigger" title="{'Album actions'|translate}"
+            <a href="#" class="js-album-dropdown-trigger"
               style="cursor: pointer; color: inherit;">
               <i class="icon-wheel"></i>
             </a>
             <div class="album-dropdown-menu">
               <i class="icon-arrow-left index"></i>
               {if !empty($image_derivatives)}
-                <div class="dropdown-item-sizes">
+                <div class="dropdown-item-sizes macadam-derivative-switch">
                   {strip}
-                    <a id="derivativeSwitchLink" title="{'Photo sizes'|@translate}" class="dropdown-item option-with-submenu"
+                    <a id="derivativeSwitchLink" class="dropdown-item option-with-submenu"
                       rel="nofollow">
 
                       <i class="icon-photo-size"></i>
                       <span>{'Photo sizes'|@translate}</span>
                     </a>
                     <div id="derivativeSwitchBox" class="switchBox">
-                      <div class="switchBoxTitle">{'Photo sizes'|@translate}</div>
                       {foreach from=$image_derivatives item=image_derivative name=loop}
-                        {if !$smarty.foreach.loop.first}<br>{/if}
                         {if $image_derivative.SELECTED}
-                          <span>&#x2714; </span>{$image_derivative.DISPLAY}
+                          <span><i class=" icon-circled-true"></i>{$image_derivative.DISPLAY}</span>
                         {else}
                           <a href="{$image_derivative.URL}" rel="nofollow">{$image_derivative.DISPLAY}</a>
                         {/if}
@@ -95,19 +95,24 @@
 
               {if !empty($image_orders)}
                 <div class="dropdown-item-sort">
-                  <a id="sortOrderLink" class="dropdown-item gallery-icon-th-large" title="{'Sort order'|@translate}"
-                    rel="nofollow">
-                    <i class="icon-sort"></i> <span>{'Sort order'|@translate}</span>
+                  <a id="sortOrderLink" class="dropdown-item gallery-icon-th-large" rel="nofollow" style="padding: 8px 10px;">
+                    <i class="icon-arrow-left sort-order-arrow"></i>
+                    <i class="icon-heart"></i> <span>{'Sort order'|@translate}</span>
                   </a>
                   <div id="sortOrderBox" class="switchBox">
                     <div class="switchBoxTitle">{'Sort order'|@translate}</div>
                     {foreach from=$image_orders item=image_order name=loop}
                       {if !$smarty.foreach.loop.first}<br>{/if}
                       {if $image_order.SELECTED}
-                        <span>&#x2714; </span>{$image_order.DISPLAY}
+                        <span class="sort-order-option selected">
+                          <span class="sort-order-icon"><i class="icon-circled-true"></i></span>{$image_order.DISPLAY}
+                        </span>
                       {else}
-                        <span style="visibility:hidden">&#x2714; </span><a href="{$image_order.URL}"
-                          rel="nofollow">{$image_order.DISPLAY}</a>
+                        <a href="{$image_order.URL}" rel="nofollow">
+                          <span class="sort-order-option">
+                            <span class="sort-order-icon" aria-hidden="true"><i class="icon-circled-true"></i></span>{$image_order.DISPLAY}
+                          </span>
+                        </a>
                       {/if}
                     {/foreach}
                   </div>
@@ -117,7 +122,7 @@
               {/if}
 
               {if isset($U_SLIDESHOW)}
-                <a href="{$U_SLIDESHOW}" title="{'slideshow'|@translate}" class="dropdown-item btn-slideshow"
+                <a href="{$U_SLIDESHOW}" class="dropdown-item btn-slideshow"
                   rel="nofollow">
                   <i class="icon-play"></i>
                   <span>{'slideshow'|@translate}</span>
@@ -136,22 +141,20 @@
                 </a>
               {/if} *}
 
-              <a href="{$U_EDIT}" class="dropdown-item btn-edit-album">
-                <i class="icon-edit"></i>
-                <span>{'Edit album'|@translate}</span>
-              </a>
+              {if !empty($U_EDIT)}
+                <a href="{$U_EDIT}" class="dropdown-item btn-edit-album">
+                  <i class="icon-edit"></i>
+                  <span>{'Edit album'|@translate}</span>
+                </a>
+              {/if}
 
             </div>
           </li>
-
-        {elseif isset($U_ADMIN)}
-          <li><a href="{$U_ADMIN}" class="gallery-icon-cog" title="{'Administration'|translate}"><i
-                class="icon-wheel"></i></a></li>
         {/if}
 
         {if !empty($PLUGIN_INDEX_BUTTONS)}
           {foreach from=$PLUGIN_INDEX_BUTTONS item=button}
-            <li>{$button}</li>
+            <li class="plugin-index-button">{$button}</li>
           {/foreach}
         {/if}
       </ul>
@@ -170,8 +173,7 @@
   </div>
   {* {if !isset($SEARCH_ID) and !isset($tag) and !isset($page.section)}
     <div class="table-of-content-container">
-      <a href="{$ROOT_URL}index.php?/table_of_content" class="btn-table-of-content"
-        title="{'Table of content'|translate}">
+      <a href="{$ROOT_URL}index.php?/table_of_content" class="btn-table-of-content">
         <i class="icon-structure"></i>
         {'Table of content'|translate}
       </a>
@@ -266,33 +268,37 @@ document.addEventListener('DOMContentLoaded', function() {
 const container = document.querySelector('.macadam-albums-container');
 const photosContainer = document.getElementById('thumbnails');
 const toggleBtn = document.getElementById('toggleLayoutLink');
+const layoutIcon = toggleBtn ? toggleBtn.querySelector('i') : null;
 
-const currentLayout = localStorage.getItem('macadam-preferred-layout');
+const configuredLayout = '{if isset($MACADAM_DEFAULT_LAYOUT) and $MACADAM_DEFAULT_LAYOUT == "list"}list{else}grid{/if}';
+const storedLayout = localStorage.getItem('macadam-preferred-layout');
+const currentLayout = storedLayout === 'grid' || storedLayout === 'list' ? storedLayout : configuredLayout;
 
-if (currentLayout === 'grid') {
-if (container) container.classList.add('view-grid');
-if (photosContainer) photosContainer.classList.add('view-grid-thumbnails');
+function applyLayout(layout) {
+const isGrid = layout === 'grid';
+if (layoutIcon) {
+layoutIcon.classList.toggle('icon-heart', isGrid);
+layoutIcon.classList.toggle('icon-grid', !isGrid);
 }
+if (container) {
+container.classList.toggle('view-grid', isGrid);
+container.classList.toggle('view-list', !isGrid);
+}
+if (photosContainer) {
+photosContainer.classList.toggle('view-grid-thumbnails', isGrid);
+photosContainer.classList.toggle('view-list-thumbnails', !isGrid);
+}
+}
+
+applyLayout(currentLayout);
 
 if (toggleBtn) {
 toggleBtn.addEventListener('click', function(e) {
 e.preventDefault();
 
-let isGrid = false;
-
-if (container) {
-container.classList.toggle('view-grid');
-isGrid = container.classList.contains('view-grid');
-}
-if (photosContainer) {
-photosContainer.classList.toggle('view-grid-thumbnails');
-}
-
-if (isGrid) {
-localStorage.setItem('macadam-preferred-layout', 'grid');
-} else {
-localStorage.setItem('macadam-preferred-layout', 'list');
-}
+const nextLayout = container && container.classList.contains('view-grid') ? 'list' : 'grid';
+applyLayout(nextLayout);
+localStorage.setItem('macadam-preferred-layout', nextLayout);
 });
 }
 });
@@ -311,6 +317,20 @@ window.location.href = thumbsLink.href;
 (function() {
 const dropdownTrigger = document.querySelector('.js-album-dropdown-trigger');
 const dropdownMenu = document.querySelector('.album-dropdown-menu');
+const submenuLinks = document.querySelectorAll('#derivativeSwitchLink, #sortOrderLink');
+const submenuBoxes = document.querySelectorAll('#derivativeSwitchBox, #sortOrderBox');
+
+submenuLinks.forEach(function(link) {
+link.addEventListener('click', function() {
+const currentBoxId = link.id === 'derivativeSwitchLink' ? 'derivativeSwitchBox' : 'sortOrderBox';
+
+submenuBoxes.forEach(function(box) {
+if (box.id !== currentBoxId) {
+box.style.display = 'none';
+}
+});
+}, true);
+});
 
 if (dropdownTrigger && dropdownMenu) {
 dropdownTrigger.addEventListener('click', function(e) {
