@@ -1,6 +1,5 @@
 
 .icon-basket:before { content: '\e800'; } /* '' */
-.icon-th-list:before { content: '\e800'; } /* '' */
 .icon-exit-fullscreen:before { content: '\e801'; } /* '' */
 .icon-cross:before { content: '\e802'; } /* '' */
 .icon-plus:before { content: '\e803'; } /* '' */
@@ -39,3 +38,7 @@
 .icon-structure:before { content: '\e825'; } /* '' */
 .icon-three-dot:before { content: '\e826'; } /* '' */
 .icon-compas-icon:before { content: '\e84c'; } /* '' */
+.icon-lines:before { content: '\e84d'; } /* '' */
+.icon-star-empty:before { content: '\e84e'; } /* '' */
+.icon-star-1:before { content: '\e84f'; } /* '' */
+.icon-half-star:before { content: '\e850'; } /* '' */
