@@ -12,9 +12,8 @@
     }
     {/html_style}
 
-    {footer_script}
-    var error_icon = "{$ROOT_URL}{$themeconf.icon_dir}/errors_small.png", max_requests = {$maxRequests};
-    {/footer_script}
+    {combine_script id='macadam.switchboxes' load='footer' path='themes/macadam/js/switchboxes.js'}
+    {combine_script id='macadam.thumbnail-config' load='footer' path='themes/macadam/js/thumbnail-config.js'}
 
     {if !empty($category_thumbnails)}
       <p class="macadam-photos-grid-title">{'Photos'|@translate}</p>
@@ -75,51 +74,4 @@
   {/strip}
   {/if}
 
-  {footer_script}
-  {literal}
-  jQuery(document).ready(function($) {
-    $(document).on('click', '.photo-actions-trigger', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      var $currentMenu = $(this).children('.pic-dropdown-menu');
-      $('.pic-dropdown-menu').not($currentMenu).removeClass('is-active');
-      $currentMenu.toggleClass('is-active');
-    });
-
-    $(document).on('click', function() {
-      $('.pic-dropdown-menu').removeClass('is-active');
-    });
-
-    $(document).on('click', '.pic-dropdown-menu .dropdown-item', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      var $item = $(this);
-      var $card = $item.closest('.macadam-photo-card');
-      var photoUrl = $card.find('.macadam-photo-link').attr('href');
-
-      if ($item.hasClass('btn-edit-pic') || $item.hasClass('btn-download-photos')) {
-        window.location.href = $item.attr('href');
-        return;
-      }
-
-      if ($item.hasClass('btn-share-pic')) {
-        if (navigator.share) {
-          navigator.share({title: document.title, url: photoUrl}).catch(function(error) {
-            if (error.name !== 'AbortError') {
-              console.error('Unable to share the picture.', error);
-            }
-          });
-        } else if (navigator.clipboard) {
-          navigator.clipboard.writeText(photoUrl).then(function() {
-            alert("Lien de la photo copié dans le presse-papier !");
-          });
-        }
-      }
-
-      $('.pic-dropdown-menu').removeClass('is-active');
-    });
-  });
-  {/literal}
-  {/footer_script}
+  {combine_script id='macadam.thumbnails' load='footer' require='jquery' path='themes/macadam/js/thumbnails.js'}

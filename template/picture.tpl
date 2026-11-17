@@ -1,4 +1,6 @@
-{combine_script id='core.switchbox' load='async' require='jquery' path='themes/default/js/switchbox.js'}
+﻿{combine_script id='core.switchbox' load='async' require='jquery' path='themes/default/js/switchbox.js'}
+{combine_script id='macadam.picture' load='footer' require='jquery' path='themes/macadam/js/picture.js'}
+{combine_script id='macadam.picture-fullscreen' load='footer' path='themes/macadam/js/picture-fullscreen.js'}
 {if isset($MENUBAR)}{$MENUBAR}{/if}
 
 <div id="content">
@@ -9,7 +11,7 @@
 
   {if !empty($PLUGIN_PICTURE_BEFORE)}{$PLUGIN_PICTURE_BEFORE}{/if}
 
-  <div class="macadam-picture-container">
+  <div class="macadam-picture-container" data-root-url="{$ROOT_URL|escape:'html'}" data-cookie-path="{$COOKIE_PATH|escape:'html'}">
 
     <div class="macadam-picture-viewer">
 
@@ -45,126 +47,8 @@
                 {/foreach}
                 {if $real_derivatives_count > 1}
                 <i class="icon-arrow-left index"></i>
-                {footer_script require='jquery'}
-                {literal}
-                  function changeImgSrc(url,typeSave,typeMap) {
-                  var theImg = document.getElementById("theMainImage");
-                  if (theImg) {
-                  theImg.removeAttribute("width"); theImg.removeAttribute("height");
-                  theImg.src = url;
-                  theImg.classList.remove('macadam-natural-size');
-                  theImg.classList.add('macadam-natural-size');
-                  theImg.useMap = "#map"+typeMap;
-                  }
-                  jQuery('#derivativeSwitchBox .switchCheck').css('visibility','hidden');
-                  jQuery('#derivativeChecked'+typeMap).css('visibility','visible');
-                  document.cookie = 'picture_deriv='+typeSave+';path={/literal}{$COOKIE_PATH}{literal}';
-                  document.cookie = 'macadam_auto_derivative=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path={/literal}{$COOKIE_PATH}{literal}';
-                  }
 
-                  jQuery(function() {
-                    var $link = jQuery('#derivativeSwitchLink');
-                    var $box = jQuery('#derivativeSwitchBox');
 
-                    if (!$link.length || !$box.length) return;
-
-                    $link.on('click', function(e) {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      var isVisible = $box.is(':visible');
-                      $box.css({
-                        display: isVisible ? 'none' : 'block',
-                        left: 'auto',
-                        right: 'calc(100% + 5px)',
-                        top: '-2px'
-                      });
-                    });
-
-                    jQuery(document).on('click', function(e) {
-                      if (!jQuery(e.target).closest('.has-switchbox').length) {
-                        $box.hide();
-                      }
-                    });
-                  });
-
-                  (function() {
-                    const dropdownTrigger = document.querySelector('.js-picture-dropdown-trigger');
-                    const dropdownMenu = document.querySelector('.album-dropdown-menu');
-
-                    if (dropdownTrigger && dropdownMenu) {
-                      dropdownTrigger.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        dropdownMenu.classList.toggle('show-menu');
-                      });
-
-                      document.addEventListener('click', function(e) {
-                        if (!dropdownMenu.contains(e.target) && !dropdownTrigger.contains(e.target)) {
-                          dropdownMenu.classList.remove('show-menu');
-                        }
-                      });
-                    }
-                  })();
-
-                {/literal}{/footer_script}
-                {footer_script require='jquery'}
-                {literal}
-                  jQuery(function() {
-                    var img = document.getElementById('theMainImage');
-                    var display = document.querySelector('.macadam-photo-display');
-                    if (!img || !display) return;
-                    var hasDerivativeCookie = document.cookie.indexOf('picture_deriv=') !== -1;
-                    var hasAutomaticCookie = document.cookie.indexOf('macadam_auto_derivative=1') !== -1;
-                    if (hasDerivativeCookie && !hasAutomaticCookie) return;
-
-                    var derivatives = [];
-                {/literal}
-                    {foreach from=$current.unique_derivatives item=derivative key=derivative_type}
-                      {if $derivative_type|lower != 'original' && $derivative->get_type()|lower != 'original'}
-                        {assign var='derivative_size' value=$derivative->get_size()}
-                {literal}
-                    derivatives.push({
-                      type: '{/literal}{$derivative->get_type()|@escape:'javascript'}{literal}',
-                      url: '{/literal}{$derivative->get_url()|@escape:'javascript'}{literal}',
-                      width: {/literal}{$derivative_size[0]|intval}{literal},
-                      height: {/literal}{$derivative_size[1]|intval}{literal}
-                    });
-                {/literal}
-                      {/if}
-                    {/foreach}
-                {literal}
-
-                    if (!derivatives.length) return;
-
-                    var availableWidth = display.clientWidth;
-                    var availableHeight = window.innerHeight * 0.8;
-                    var selected = null;
-                    var smallest = derivatives[0];
-
-                    // Use the largest derivative that fits the display width and 80% of the viewport height.
-                    derivatives.forEach(function(derivative) {
-                      if (derivative.width < smallest.width) {
-                        smallest = derivative;
-                      }
-                      if (derivative.width <= availableWidth &&
-                          derivative.height <= availableHeight &&
-                          (!selected || derivative.width > selected.width)) {
-                        selected = derivative;
-                      }
-                    });
-
-                    selected = selected || smallest;
-                    img.removeAttribute('width');
-                    img.removeAttribute('height');
-                    img.src = selected.url;
-                    img.useMap = '#map' + selected.type;
-                    jQuery('#derivativeSwitchBox .switchCheck').css('visibility', 'hidden');
-                    jQuery('#derivativeChecked' + selected.type).css('visibility', 'visible');
-                    document.cookie = 'picture_deriv=' + selected.type + ';path={/literal}{$COOKIE_PATH}{literal}';
-                    document.cookie = 'macadam_auto_derivative=1;path={/literal}{$COOKIE_PATH}{literal}';
-                  });
-                {/literal}
-                {/footer_script}
 
                 <li class="dropdown-item has-switchbox">
                   {strip}
@@ -174,10 +58,16 @@
                     <div id="derivativeSwitchBox" class="switchBox">
                       {foreach from=$current.unique_derivatives item=derivative key=derivative_type}
                         {if $derivative_type|lower != 'original' && $derivative->get_type()|lower != 'original'}
+                        {assign var='derivative_size' value=$derivative->get_size()}
                         <span class="switchCheck" id="derivativeChecked{$derivative->get_type()}"
                           {if $derivative->get_type() ne $current.selected_derivative->get_type()} style="visibility:hidden"
                           {/if}><i class="icon-circled-true"></i></span>
-                        <a href="javascript:changeImgSrc('{$derivative->get_url()|@escape:javascript}','{$derivative_type}','{$derivative->get_type()}')">
+                        <a href="#" class="macadam-derivative-link"
+                          data-url="{$derivative->get_url()|escape:'html'}"
+                          data-save="{$derivative_type|escape:'html'}"
+                          data-type="{$derivative->get_type()|escape:'html'}"
+                          data-width="{$derivative_size[0]|intval}"
+                          data-height="{$derivative_size[1]|intval}">
                           {$derivative->get_type()|@translate}
                           <span class="derivativeSizeDetails">({$derivative->get_size_hr()})</span>
                         </a>
@@ -204,13 +94,7 @@
                         <i class="icon-add-drive"></i> {'Download'|@translate}
                       </a>
                       {if !empty($current.formats)}
-                        {footer_script require='jquery'}
-                        {literal}
-                          jQuery().ready(function() {
-                          jQuery("#downloadSwitchLink").removeAttr("href");
-                          (window.SwitchBox=window.SwitchBox||[]).push("#downloadSwitchLink", "#downloadSwitchBox");
-                          });
-                        {/literal}{/footer_script}
+
                         <div id="downloadSwitchBox" class="switchBox">
                           <div class="switchBoxTitle">{'Download'|translate} - {'Formats'|translate}</div>
                           <ul>
@@ -244,20 +128,9 @@
                 {/if}
 
                 {if isset($U_CADDIE)}
-                  {footer_script}
-                  {literal}
-                    function addToCadie(aElement, rootUrl, id) {
-                    if (aElement.disabled) return;
-                    aElement.disabled=true;
-                    var y = new PwgWS(rootUrl);
-                    y.callService("pwg.caddie.add", {image_id: id}, {
-                    onFailure: function(num, text) { alert(num + " " + text); document.location=aElement.href; },
-                    onSuccess: function(result) { aElement.disabled = false; }
-                    });
-                    }
-                  {/literal}{/footer_script}
+
                   <li class="dropdown-item">
-                    <a href="{$U_CADDIE}" onclick="addToCadie(this, '{$ROOT_URL}', {$current.id}); return false;" rel="nofollow">
+                    <a href="{$U_CADDIE}" class="js-add-to-caddie" data-image-id="{$current.id}" rel="nofollow">
                       <i class="icon-banner"></i> {'Add to my selection'|@translate}
                     </a>
                   </li>
@@ -266,7 +139,7 @@
                 {if isset($U_PHOTO_ADMIN)}
                   <li class="dropdown-item admin-edit-link">
                     <a id="cmdEditPhoto" href="{$U_PHOTO_ADMIN}" rel="nofollow">
-                      <i class="icon-edit"></i> {'Éditer la photo'|@translate}
+                      <i class="icon-edit"></i> {'Edit picture'|@translate}
                     </a>
                   </li>
                 {/if}
@@ -399,17 +272,35 @@
                 </li>
               {/if}
               {if $display_info.rating_score and isset($rate_summary)}
-                <li>
+                <li id="ratingInfo">
                   <i class="icon-star"></i>
                   <span class="info-value">
                     {if $rate_summary.count}
-                      <span id="ratingScore">{$rate_summary.average}</span> <span
-                        id="ratingCount">({$rate_summary.count|@translate_dec:'%d rate':'%d rates'})</span>
+                      <span id="ratingScore">{$rate_summary.average}/5</span>
                     {else}
-                      <span id="ratingScore">{'no rate'|@translate}</span> <span id="ratingCount"></span>
+                      <span id="ratingScore">{'no rate'|@translate}</span>
                     {/if}
                   </span>
-                  <span class="info-label">/5</span>
+                  {if isset($rating)}
+                    <span class="open-rating-form" id="openRatingForm">
+                      {if isset($rating.USER_RATE)}<i class="icon-edit"></i> {'Update your rating'|@translate}{else}<i class="icon-add"></i> {'Rate this photo'|@translate}{/if}
+                    </span>
+                    
+                    <form action="{$rating.F_ACTION}" method="post" id="interactiveRateForm" class="interactive-rating-form">
+                      <input type="hidden" name="rate" id="interactiveRateValue" value="">
+                      <div class="interactive-rating-stars" role="radiogroup" aria-label="{'Rate this photo'|@translate}">
+                        {for $star=1 to 5}
+                          <button type="button" class="interactive-rating-star" data-rating="{$star}" aria-label="{$star}/5">
+                            <i class="icon-star-empty" aria-hidden="true"></i>
+                          </button>
+                        {/for}
+                      </div>
+                      <div class="interactive-rating-actions">
+                        <button type="submit" class="interactive-rating-submit"><i class="icon-circled-true"></i></button>
+                        <button type="button" class="interactive-rating-close"><i class="icon-cross"></i></button>
+                      </div>
+                    </form>
+                  {/if}
                 </li>
               {/if}
               {if $display_info.file and isset($display_info.file)}
@@ -428,39 +319,6 @@
               {/if}
             </ul>
           </div>
-
-          {if isset($rating)}
-            <div class="macadam-rating-box">
-              <span id="updateRate" class="rating-title">
-                {if isset($rating.USER_RATE)}{'Update your rating'|@translate}{else}{'Rate this photo'|@translate}{/if}
-              </span>
-              <form action="{$rating.F_ACTION}" method="post" id="rateForm" style="margin-top: 10px;">
-                <div class="rating-buttons">
-                  {foreach from=$rating.marks item=mark}
-                    {if $mark == 0}
-                      <label class="rating-reset" title="Clear rating">
-                        {if isset($rating.USER_RATE) && $mark==$rating.USER_RATE}
-                          <input type="button" name="rate" value="{$mark}" class="rateButtonSelected">
-                        {else}
-                          <input type="submit" name="rate" value="{$mark}" class="rateButton">
-                        {/if}
-                        <span class="icon-cross" aria-hidden="true"></span>
-                      </label>
-                    {else}
-                      <label class="rating-star" title="{$mark}">
-                        {if isset($rating.USER_RATE) && $mark==$rating.USER_RATE}
-                          <input type="button" name="rate" value="{$mark}" class="rateButtonSelected">
-                        {else}
-                          <input type="submit" name="rate" value="{$mark}" class="rateButton">
-                        {/if}
-                        <span class="icon-star" aria-hidden="true"></span>
-                      </label>
-                    {/if}
-                  {/foreach}
-                </div>
-              </form>
-            </div>
-          {/if}
         </div>
 
         {if isset($COMMENT_COUNT)}
@@ -525,275 +383,3 @@
   </div>
   {if !empty($PLUGIN_PICTURE_AFTER)}{$PLUGIN_PICTURE_AFTER}{/if}
 </div>
-
-{footer_script}
-{literal}
-  document.addEventListener('DOMContentLoaded', function() {
-
-  const tabInfo = document.getElementById('tabInfoLink');
-  const tabComments = document.getElementById('tabCommentsLink');
-  const viewInfo = document.getElementById('macadam-sidebar-info-view');
-  const viewComments = document.getElementById('macadam-sidebar-comments-view');
-
-  if(tabInfo && tabComments) {
-  tabInfo.addEventListener('click', function() {
-  tabInfo.classList.add('active');
-  tabComments.classList.remove('active');
-  viewInfo.style.display = 'block';
-  viewComments.style.display = 'none';
-  });
-  tabComments.addEventListener('click', function() {
-  tabComments.classList.add('active');
-  tabInfo.classList.remove('active');
-  viewInfo.style.display = 'none';
-  viewComments.style.display = 'block';
-  });
-  }
-
-  const toggleBtn = document.getElementById('toggle-comment-form');
-  const commentForm = document.getElementById('commentAdd');
-
-  if (toggleBtn && commentForm) {
-  toggleBtn.addEventListener('click', function(e) {
-  e.preventDefault();
-  if (commentForm.style.display === 'none' || commentForm.style.display === '') {
-  commentForm.style.display = 'block';
-  toggleBtn.style.transform = 'rotate(45deg)';
-  } else {
-  commentForm.style.display = 'none';
-  toggleBtn.style.transform = 'rotate(0deg)';
-  }
-  });
-  }
-
-  const fsToggle = document.getElementById('macadam-fullscreen-toggle');
-  const fsCloseBtn = document.getElementById('macadam-fullscreen-close-btn');
-  const container = document.querySelector('.macadam-picture-container');
-  const photoDis = document.querySelector('.macadam-photo-display');
-  const theImage = document.getElementById('theImage');
-  const navArrowFullscreen = document.querySelectorAll('.macadam-nav-arrow');
-  const carouselStrip = document.querySelector('.macadam-carousel-strip');
-
-  const arrowLeft = document.querySelector('.macadam-main-photo-stage .macadam-nav-arrow.arrow-left');
-  const arrowRight = document.querySelector('.macadam-main-photo-stage .macadam-nav-arrow.arrow-right');
-  const thumbnailItems = Array.from(document.querySelectorAll('.macadam-carousel-strip .strip-thumb-item'));
-  let fullscreenImageIndex = thumbnailItems.findIndex(function(item) {
-  return item.classList.contains('active');
-  });
-  let touchStartX = 0;
-  let touchStartY = 0;
-  let suppressImageClick = false;
-
-  function logFullscreenVisit(imageId) {
-  const parsedImageId = parseInt(imageId, 10);
-  if (!parsedImageId || typeof jQuery !== 'function') {
-  console.error('Unable to log fullscreen image visit: invalid image ID or jQuery unavailable.');
-  return;
-  }
-
-  jQuery.ajax({
-  type: 'POST',
-  url: '{/literal}{$ROOT_URL}{literal}ws.php?format=json&method=pwg.history.log',
-  data: {
-  image_id: parsedImageId
-  },
-  dataType: 'json',
-  error: function(xhr, status, error) {
-  console.error('Unable to log fullscreen image visit:', status, error, xhr.responseText);
-  }
-  });
-  }
-
-  function updateFullscreenArrowState() {
-  const atFirstImage = fullscreenImageIndex <= 0;
-  const atLastImage = fullscreenImageIndex >= thumbnailItems.length - 1;
-
-  navArrowFullscreen.forEach(function(arrow) {
-  if (arrow.classList.contains('arrow-left')) {
-  arrow.classList.toggle('disabled', atFirstImage);
-  } else if (arrow.classList.contains('arrow-right')) {
-  arrow.classList.toggle('disabled', atLastImage);
-  }
-  });
-  }
-
-  function changeFullscreenImage(index) {
-  if (!document.fullscreenElement || !thumbnailItems.length || !theImage) return false;
-
-  const item = thumbnailItems[index];
-  const image = document.getElementById('theMainImage');
-  const fullSrc = item && item.dataset.fullSrc;
-  if (!item || !image || !fullSrc) return false;
-
-  fullscreenImageIndex = index;
-  image.src = fullSrc;
-  image.alt = item.querySelector('img') ? item.querySelector('img').alt : image.alt;
-  logFullscreenVisit(item.dataset.imageId);
-  thumbnailItems.forEach(function(thumbnail) {
-  thumbnail.classList.toggle('active', thumbnail === item);
-  });
-  updateFullscreenArrowState();
-  return true;
-  }
-
-  function navigateToPrevious() {
-  if (document.fullscreenElement) {
-  if (fullscreenImageIndex > 0) {
-  changeFullscreenImage(fullscreenImageIndex - 1);
-  }
-  } else if (arrowLeft) {
-  arrowLeft.click();
-  }
-  }
-
-  function navigateToNext() {
-  if (document.fullscreenElement) {
-  if (fullscreenImageIndex < thumbnailItems.length - 1) {
-  changeFullscreenImage(fullscreenImageIndex + 1);
-  }
-  } else if (arrowRight) {
-  arrowRight.click();
-  }
-  }
-
-  function toggleFullscreen() {
-  if (!document.fullscreenElement) {
-  container.requestFullscreen()
-  .catch(err => console.error("Erreur d'activation : " + err.message));
-  } else {
-  sessionStorage.removeItem('macadam_persist_fullscreen');
-  document.exitFullscreen();
-  }
-  }
-
-  if (fsToggle && container) {
-  fsToggle.addEventListener('click', toggleFullscreen);
-  }
-  if (fsCloseBtn) {
-  fsCloseBtn.addEventListener('click', toggleFullscreen);
-  }
-
-  if (carouselStrip) {
-  thumbnailItems.forEach(function(thumbnail) {
-  thumbnail.addEventListener('click', function() {
-  sessionStorage.setItem('macadam_carousel_scroll_left', String(carouselStrip.scrollLeft));
-  });
-  });
-  }
-
-  if (theImage && container) {
-    theImage.addEventListener('click', function() {
-      if (suppressImageClick) {
-        suppressImageClick = false;
-        return;
-      }
-      if (window.innerWidth <= 768) {
-        toggleFullscreen();
-      }
-    });
-
-    theImage.addEventListener('touchstart', function(e) {
-      if (!document.fullscreenElement || window.innerWidth > 768 || !e.touches.length) return;
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-    }, { passive: true });
-
-    theImage.addEventListener('touchend', function(e) {
-      if (!document.fullscreenElement || window.innerWidth > 768 || !e.changedTouches.length) return;
-
-      const touchEndX = e.changedTouches[0].clientX;
-      const touchEndY = e.changedTouches[0].clientY;
-      const deltaX = touchEndX - touchStartX;
-      const deltaY = touchEndY - touchStartY;
-
-      if (Math.abs(deltaX) < 50 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
-
-      e.preventDefault();
-      suppressImageClick = true;
-      window.setTimeout(function() {
-        suppressImageClick = false;
-      }, 500);
-      if (deltaX < 0) {
-        navigateToNext();
-      } else {
-        navigateToPrevious();
-      }
-    }, { passive: false });
-  }
-
-  if (arrowLeft) {
-  arrowLeft.addEventListener('click', function(e) {
-  if (document.fullscreenElement) {
-  e.preventDefault();
-  navigateToPrevious();
-  }
-  });
-  }
-  if (arrowRight) {
-  arrowRight.addEventListener('click', function(e) {
-  if (document.fullscreenElement) {
-  e.preventDefault();
-  navigateToNext();
-  }
-  });
-  }
-
-  document.addEventListener('keydown', function(e) {
-  if (document.fullscreenElement && container.classList.contains('macadam-in-fullscreen')) {
-  if (e.key === 'ArrowLeft') {
-  e.preventDefault();
-  navigateToPrevious();
-  } else if (e.key === 'ArrowRight') {
-  e.preventDefault();
-  navigateToNext();
-  } else if (e.key === 'Escape') {
-  e.preventDefault();
-  toggleFullscreen();
-  }
-  }
-  });
-
-  document.addEventListener('fullscreenchange', function() {
-  if (document.fullscreenElement) {
-  container.classList.add('macadam-in-fullscreen');
-  photoDis.classList.add('display-in-fullscreen');
-  navArrowFullscreen.forEach(arrow => arrow.classList.add('arrow-fullscreen'));
-  updateFullscreenArrowState();
-  } else {
-  container.classList.remove('macadam-in-fullscreen');
-  photoDis.classList.remove('display-in-fullscreen');
-  navArrowFullscreen.forEach(arrow => arrow.classList.remove('arrow-fullscreen'));
-  }
-  });
-
-  function reenterFullscreen() {
-  if (sessionStorage.getItem('macadam_persist_fullscreen') === 'true' && container) {
-  container.requestFullscreen()
-  .then(() => {
-  sessionStorage.removeItem('macadam_persist_fullscreen');
-  })
-  .catch(err => console.log("Réactivation en attente d'interaction :", err.message));
-
-  document.removeEventListener('click', reenterFullscreen);
-  document.removeEventListener('keydown', reenterFullscreen);
-  }
-  }
-
-  if (sessionStorage.getItem('macadam_persist_fullscreen') === 'true') {
-  document.addEventListener('click', reenterFullscreen);
-  document.addEventListener('keydown', reenterFullscreen);
-  reenterFullscreen();
-  }
-
-  if (carouselStrip) {
-  const savedCarouselScrollLeft = sessionStorage.getItem('macadam_carousel_scroll_left');
-  if (savedCarouselScrollLeft !== null) {
-  carouselStrip.scrollLeft = parseInt(savedCarouselScrollLeft, 10) || 0;
-  sessionStorage.removeItem('macadam_carousel_scroll_left');
-  }
-  }
-
-  });
-  
-{/literal}
-{/footer_script}

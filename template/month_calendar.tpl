@@ -7,13 +7,9 @@
         <input type="hidden" name="month" value="{$chronology_calendar.month|default:''}">
 
         <label class="sr-only" for="{$chronology_calendar.field_sort|default:'sort'}">{'Sort by'|translate}</label>
-        <select id="{$chronology_calendar.field_sort|default:'sort'}" name="{$chronology_calendar.field_sort|default:'sort'}" class="cal-select-sort">
-          <option value="post_date" selected>{$chronology_calendar.sort_label|default:'Sort by : post date'}</option>
-          {if isset($chronology_calendar.U_SORT_LIST) && !empty($chronology_calendar.U_SORT_LIST)}
-            {foreach from=$chronology_calendar.U_SORT_LIST item=s}
-              <option value="{$s.value}" {if $s.selected}selected{/if}>{$s.label}</option>
-            {/foreach}
-          {/if}
+        <select id="{$chronology_calendar.field_sort|default:'sort'}" class="cal-select-sort" onchange="if (this.value) window.location.href = this.value;">
+          <option value="{$MACADAM_POSTED_CALENDAR_URL|escape}" {if $MACADAM_CALENDAR_FIELD == 'posted'}selected{/if}>{'Post date'|translate}</option>
+          <option value="{$MACADAM_CREATED_CALENDAR_URL|escape}" {if $MACADAM_CALENDAR_FIELD == 'created'}selected{/if}>{'Creation date'|translate}</option>
         </select>
       </form>
 
@@ -146,4 +142,3 @@
 
   </div>
 {/if}
-

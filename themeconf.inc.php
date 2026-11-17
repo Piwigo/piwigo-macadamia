@@ -16,6 +16,7 @@ $themeconf = array(
 
 load_language('theme.lang', PHPWG_THEMES_PATH . 'macadam/');
 add_event_handler('loc_begin_index', 'macadam_get_header_albums');
+add_event_handler('loc_begin_index', 'macadam_assign_posted_calendar_url');
 add_event_handler('loc_begin_picture', 'macadam_get_header_albums');
 add_event_handler('loc_begin_picture', 'macadam_load_picture_menubar');
 add_event_handler('loc_end_picture', 'macadam_get_picture_thumbnails');
@@ -25,19 +26,75 @@ add_event_handler('loc_begin_picture', 'macadam_register_smarty_functions');
 add_event_handler('loc_begin_page_header', 'macadam_register_smarty_functions');
 add_event_handler('loc_end_index_thumbnails', 'macadam_get_thumbnail_details');
 
-add_event_handler('loc_begin_page_header', 'macadam_chronology_month_header_fallback');
-
 add_event_handler('loc_begin_index', 'macadam_toc_section_init');
 add_event_handler('loc_end_index', 'macadam_toc_page');
 add_event_handler('loc_begin_index', 'macadam_assign_layout');
 add_event_handler('loc_begin_picture', 'macadam_assign_layout');
 add_event_handler('loc_begin_page_header', 'macadam_assign_layout');
 
+/**
+ * Loads the menu on photo pages.
+ */
 function macadam_load_picture_menubar()
 {
   include_once(PHPWG_ROOT_PATH . 'include/menubar.inc.php');
 }
 
+/**
+ * Builds the date-field calendar URLs for the current index context.
+ */
+function macadam_assign_posted_calendar_url()
+{
+  global $template, $page;
+
+  $current_field = isset($page['chronology_field'])
+    ? $page['chronology_field']
+    : '';
+  $removed = array(
+    'start',
+    'flat',
+    'chronology_date',
+    'chronology_field',
+    'chronology_style',
+    'chronology_view',
+  );
+
+  foreach (array('posted', 'created') as $chronology_field) {
+    $template->assign(
+      'MACADAM_' . strtoupper($chronology_field) . '_CALENDAR_URL',
+      duplicate_index_url(
+        array(
+          'chronology_field' => $chronology_field,
+          'chronology_style' => 'monthly',
+          'chronology_view' => 'calendar',
+        ),
+        $removed
+      )
+    );
+  }
+
+  $template->assign('MACADAM_CALENDAR_FIELD', $current_field);
+  $template->assign(
+    'MACADAM_POSTED_CALENDAR_URL',
+    duplicate_index_url(
+      array(
+        'chronology_field' => $current_field === 'posted' ? 'created' : 'posted',
+        'chronology_style' => 'monthly',
+        'chronology_view' => 'calendar',
+      ),
+      $removed
+    )
+  );
+}
+
+/**
+ * Gets the layout and header settings used by the theme.
+ *
+ * It runs on album pages, photo pages, and the page header. It reads the
+ * saved Macadam options, chooses grid or list mode, and sends the values to
+ * Smarty. If a header photo was chosen, it checks that the current user can
+ * see it before using it.
+ */
 function macadam_assign_layout()
 {
   global $conf, $template, $user;
@@ -81,46 +138,27 @@ SELECT i.id, i.path, i.representative_ext
     ? '100vh'
     : $header_height . 'px');
 }
+/**
+ * Makes the Macadam helpers available in Smarty templates.
+ *
+ * This is hooked to a few page events because different pages can render
+ * templates in different ways. The small flag stops the helpers from being
+ * registered twice. It uses the newer Smarty method when available and keeps
+ * the older method for older Piwigo versions.
+ */
+function macadam_register_smarty_functions()
+{
+  global $template;
 
-function macadam_chronology_month_header_fallback(){
-  global $template, $page;
-
-  // Only when we are on chronology month calendar context (smarty var is used in template/month_calendar.tpl)
-  if (!isset($page['chronology']) && empty($page)) {
+  static $registered = false;
+  if ($registered) {
     return;
   }
 
-  // Try to get month/year from GET (when provided)
-  $month = isset($_GET['month']) ? intval($_GET['month']) : 0;
-  $year  = isset($_GET['year']) ? intval($_GET['year']) : 0;
-
-  // If not provided, fallback to current server month/year
-  if ($month < 1 || $month > 12) {
-    $month = intval(date('n'));
-  }
-  if ($year < 1) {
-    $year = intval(date('Y'));
-  }
-
-  // Set only if Chronology didn't already provide them
-  // (we don't have direct access to $chronology_calendar here, so we assign extra vars used by template fallbacks)
   $smarty = method_exists($template, 'get_smarty') ? $template->get_smarty() : $template->smarty;
-  if (!$smarty) return;
-
-  $month_name = date('F', mktime(0,0,0,$month,1,$year));
-
-  $template->assign('macadam_cal_fallback_month_name', $month_name);
-  $template->assign('macadam_cal_fallback_year', (string)$year);
-}
-
-function macadam_register_smarty_functions() {
-  global $template;
-  
-  static $registered = false;
-  if ($registered) return;
-  
-  $smarty = method_exists($template, 'get_smarty') ? $template->get_smarty() : $template->smarty;
-  if (!$smarty) return;
+  if (!$smarty) {
+    return;
+  }
 
   if (method_exists($smarty, 'registerPlugin')) {
     $smarty->registerPlugin('function', 'macadam_get_extra_images', 'macadam_smarty_get_extra_images');
@@ -129,11 +167,19 @@ function macadam_register_smarty_functions() {
     $smarty->register_function('macadam_get_extra_images', 'macadam_smarty_get_extra_images');
     $smarty->register_function('macadam_has_photos', 'macadam_smarty_has_photos');
   }
-  
+
   $registered = true;
 }
 
-function macadam_smarty_has_photos($params, $smarty) {
+/**
+ * Tells a template if the current page has any photos.
+ *
+ * It is used as the macadam_has_photos Smarty helper. The helper checks
+ * Piwigo's page items and can put the true/false result into a Smarty
+ * variable when the template gives it an assign name.
+ */
+function macadam_smarty_has_photos($params, $smarty)
+{
   global $page;
   $has_photos = !empty($page['items']);
   if (isset($params['assign'])) {
@@ -141,26 +187,34 @@ function macadam_smarty_has_photos($params, $smarty) {
   }
 }
 
-function macadam_smarty_get_extra_images($params, $smarty) {
+/**
+ * Finds a few extra photos for the related-photo section.
+ *
+ * A template gives it albums ID and the photos currently being shown. It
+ * looks in those albums and their child albums, keeps only photos the user can
+ * access, skips the current photos, and returns the two newest matches.
+ */
+function macadam_smarty_get_extra_images($params, $smarty)
+{
   global $user;
 
   $cat_id = isset($params['cat_id']) ? intval($params['cat_id']) : 0;
   $main_img_id = isset($params['main_img_id']) ? intval($params['main_img_id']) : 0;
-  
+
   $extra_images = array();
-  
+
   if ($cat_id > 0) {
     $query = '
 SELECT DISTINCT i.id, i.path, i.representative_ext, i.date_available
-  FROM '.IMAGE_CATEGORY_TABLE.' ic
-    INNER JOIN '.IMAGES_TABLE.' i ON i.id = ic.image_id
-    INNER JOIN '.CATEGORIES_TABLE.' c ON c.id = ic.category_id
-    INNER JOIN '.USER_CACHE_CATEGORIES_TABLE.' uc ON c.id = uc.cat_id AND uc.user_id = '.$user['id'].'
-  WHERE (c.id = '.$cat_id.' 
-         OR c.uppercats LIKE "'.$cat_id.',%" 
-         OR c.uppercats LIKE "%,'.$cat_id.',%" 
-         OR c.uppercats LIKE "%,'.$cat_id.'")
-    AND i.id != '.$main_img_id.'
+  FROM ' . IMAGE_CATEGORY_TABLE . ' ic
+    INNER JOIN ' . IMAGES_TABLE . ' i ON i.id = ic.image_id
+    INNER JOIN ' . CATEGORIES_TABLE . ' c ON c.id = ic.category_id
+    INNER JOIN ' . USER_CACHE_CATEGORIES_TABLE . ' uc ON c.id = uc.cat_id AND uc.user_id = ' . $user['id'] . '
+  WHERE (c.id = ' . $cat_id . '
+         OR c.uppercats LIKE "' . $cat_id . ',%"
+         OR c.uppercats LIKE "%,' . $cat_id . ',%"
+         OR c.uppercats LIKE "%,' . $cat_id . '")
+    AND i.id != ' . $main_img_id . '
   ORDER BY i.date_available DESC
   LIMIT 2
 ;';
@@ -172,39 +226,45 @@ SELECT DISTINCT i.id, i.path, i.representative_ext, i.date_available
             'id' => $row['id'],
             'path' => $row['path'],
             'representative_ext' => $row['representative_ext']
-          ))
+          )),
         );
       }
     }
   }
-  
+
   if (isset($params['assign'])) {
     $smarty->assign($params['assign'], $extra_images);
   }
 }
 
-function macadam_get_header_albums() 
+/**
+ * Prepares the albums and other links shown in the theme header.
+ *
+ * It runs on album pages, photo pages, and the page header. It loads the
+ * albums once, puts child albums under their parent, and sends album counts,
+ * tags, favorites, and contact/share links to Smarty. The global flag is
+ * there because more than one Piwigo event can call this function in one page.
+ */
+function macadam_get_header_albums()
 {
   global $template, $user, $conf, $pwg_loaded_plugins;
 
-  if (isset($GLOBALS['macadam_albums_loaded']))
+  if (isset($GLOBALS['macadam_albums_loaded'])) {
     return;
+  }
   $GLOBALS['macadam_albums_loaded'] = true;
 
-  // --- ShareAlbum Plugin Verification ---
   $sharealbum_links = array();
   $sharealbum_active = false;
 
   if (isset($pwg_loaded_plugins['ShareAlbum'])) {
     $sharealbum_active = true;
-    
-    // Fetch all existing shareable links from ShareAlbum table
+
     $query_share = "SELECT cat, code FROM " . SHAREALBUM_TABLE;
     $result_share = pwg_query($query_share);
     
     if ($result_share) {
       while ($row_share = pwg_db_fetch_assoc($result_share)) {
-        // Generate absolute link using the native plugin helper function
         $sharealbum_links[$row_share['cat']] = sharealbum_get_shareable_url($row_share['code']);
       }
     }
@@ -215,7 +275,6 @@ function macadam_get_header_albums()
     'SHAREALBUM_LINKS'  => $sharealbum_links,
   ));
 
-  // --- Contact Plugin Verification ---
   $header_contact = null;
   if (isset($pwg_loaded_plugins['ContactForm'])) {
     $header_contact = array(
@@ -229,7 +288,6 @@ function macadam_get_header_albums()
   $display_empty = !empty($conf['display_empty_categories']);
   $empty_condition = $display_empty ? '' : ' AND uc.count_images > 0';
 
-  // Fetch all categories the user has access to, ordered by their rank
   $query = '
 SELECT c.id, c.name, c.permalink, c.id_uppercat, c.comment, uc.count_images, uc.count_categories,
        i.id AS img_id, i.path, i.representative_ext
@@ -251,14 +309,14 @@ SELECT c.id, c.name, c.permalink, c.id_uppercat, c.comment, uc.count_images, uc.
     $row['id_UP'] = $row['id_uppercat'];
     $row['TN_ALT'] = htmlspecialchars($row['name']);
     $row['representative_picture_id'] = $row['img_id'];
-    
+
     if (!empty($row['path']) && class_exists('SrcImage')) {
       $row['representative'] = array(
         'src_image' => new SrcImage(array(
           'id' => $row['img_id'],
           'path' => $row['path'],
           'representative_ext' => $row['representative_ext']
-        ))
+        )),
       );
     }
 
@@ -266,16 +324,13 @@ SELECT c.id, c.name, c.permalink, c.id_uppercat, c.comment, uc.count_images, uc.
     $albums_by_id[$row['id']] = $row;
   }
 
-  // Calculate totals
   $total_albums = count($albums_by_id);
   $total_images = 0;
 
-  // Build a tree structure (root albums + sub-albums)
   $header_albums = array();
   foreach ($albums_by_id as $id => &$cat) {
     if (empty($cat['id_uppercat']) || !isset($albums_by_id[$cat['id_uppercat']])) {
       $header_albums[$id] = &$cat;
-      // Sum up the cumulative image counts from root albums
       $total_images += $cat['count_images'];
     } else {
       $albums_by_id[$cat['id_uppercat']]['sub_albums'][] = &$cat;
@@ -288,7 +343,6 @@ SELECT c.id, c.name, c.permalink, c.id_uppercat, c.comment, uc.count_images, uc.
   $template->assign('MACADAM_TOTAL_ALBUMS', $total_albums);
   $template->assign('MACADAM_TOTAL_IMAGES', $total_images);
 
-  // --- Fetch Tags ---
   $query_tags = 'SELECT id, name, url_name FROM ' . TAGS_TABLE . ' ORDER BY name ASC;';
   $result_tags = pwg_query($query_tags);
   $header_tags = array();
@@ -298,8 +352,6 @@ SELECT c.id, c.name, c.permalink, c.id_uppercat, c.comment, uc.count_images, uc.
   }
   $template->assign('MACADAM_HEADER_TAGS', $header_tags);
 
-  // --- Fetch Favorites ---
-  // Fetch the user's favorite images (limit to 10 for the dropdown)
   $query_favs = '
 SELECT i.id, i.name, i.file
   FROM ' . FAVORITES_TABLE . ' uf
@@ -311,7 +363,6 @@ SELECT i.id, i.name, i.file
   $result_favs = pwg_query($query_favs);
   $header_favorites = array();
   while ($row = pwg_db_fetch_assoc($result_favs)) {
-    // Fallback to filename if the image has no specific name
     $name = !empty($row['name']) ? $row['name'] : $row['file'];
     $url = make_picture_url(array('image_id' => $row['id']));
     $header_favorites[] = array('name' => $name, 'URL' => $url);
@@ -319,11 +370,18 @@ SELECT i.id, i.name, i.file
   $template->assign('MACADAM_HEADER_FAVORITES', $header_favorites);
 }
 
+/**
+ * Builds the small photo list shown below a picture.
+ *
+ * It runs at the end of a picture page and uses the image IDs already chosen
+ * by Piwigo. It loads the needed data in one query, keeps the same order, and
+ * makes both small and large image URLs. The picture template reads the final
+ * MACADAM_THUMBS list to draw the thumbnail strip.
+ */
 function macadam_get_picture_thumbnails()
 {
   global $template, $page;
 
-  // Check if we are currently viewing an image page with an associated category
   if (empty($page['items']) || !isset($page['category']['id'])) {
     return;
   }
@@ -332,27 +390,26 @@ function macadam_get_picture_thumbnails()
 
   $macadam_thumbs = array();
 
-  // STEP 1: Fetch raw metadata for all images belonging to the current context ($page['items'])
   $query = '
 SELECT id, name, file, path
   FROM ' . IMAGES_TABLE . '
   WHERE id IN (' . implode(',', $page['items']) . ')
 ;';
   $result = pwg_query($query);
-  
+
   $images_data = array();
   while ($row = pwg_db_fetch_assoc($result)) {
     $images_data[$row['id']] = $row;
   }
 
-  // STEP 2: Map and order derivative thumbnail objects matching Piwigo's native sorted stack
   foreach ($page['items'] as $img_id) {
-    if (!isset($images_data[$img_id])) continue;
+    if (!isset($images_data[$img_id])) {
+      continue;
+    }
 
     $img = $images_data[$img_id];
     $url = make_picture_url(array('image_id' => $img['id'], 'category' => $page['category']));
-    
-    // Safely verify if SrcImage is loaded to prevent premature runtime script termination
+
     if (class_exists('SrcImage')) {
       $src_image = new SrcImage($img);
       $derivative = new DerivativeImage(IMG_SQUARE, $src_image);
@@ -360,8 +417,7 @@ SELECT id, name, file, path
       $full_derivative = new DerivativeImage(IMG_LARGE, $src_image);
       $full_src_url = $full_derivative->get_url();
     } else {
-      // Fallback baseline image reference path mapping
-      $src_url = preg_replace('#^./#', '', $img['path']); 
+      $src_url = preg_replace('#^./#', '', $img['path']);
       $full_src_url = $src_url;
     }
 
@@ -377,10 +433,21 @@ SELECT id, name, file, path
   $template->assign('MACADAM_THUMBS', $macadam_thumbs);
 }
 
-function macadam_get_thumbnail_details($tpl_thumbnails) {
+/**
+ * Adds the selected extra information below album thumbnails.
+ *
+ * Piwigo calls this after it has made the thumbnail list. The function reads
+ * the Macadam settings, loads the file size, dates, and author in one query,
+ * then adds the chosen values as MACADAM_METADATA. The album templates can
+ * display that data without changing Piwigo's normal thumbnail fields.
+ */
+function macadam_get_thumbnail_details($tpl_thumbnails)
+{
   global $conf;
 
-  if (!is_array($tpl_thumbnails) || empty($tpl_thumbnails)) return $tpl_thumbnails;
+  if (!is_array($tpl_thumbnails) || empty($tpl_thumbnails)) {
+    return $tpl_thumbnails;
+  }
 
   $thumbnail_metadata_fields = array('format', 'filesize', 'date_creation', 'author', 'date_available');
   $options = isset($conf['macadam']) ? safe_unserialize($conf['macadam']) : array();
@@ -396,12 +463,14 @@ function macadam_get_thumbnail_details($tpl_thumbnails) {
     }
   }
 
-  if (empty($image_ids)) return $tpl_thumbnails;
+  if (empty($image_ids)) {
+    return $tpl_thumbnails;
+  }
 
   $query = '
 SELECT id, file, filesize, date_creation, author, date_available
-  FROM '.IMAGES_TABLE.'
-  WHERE id IN ('.implode(',', $image_ids).')
+  FROM ' . IMAGES_TABLE . '
+  WHERE id IN (' . implode(',', $image_ids) . ')
 ;';
   $result = pwg_query($query);
   $details = array();
@@ -419,7 +488,6 @@ SELECT id, file, filesize, date_creation, author, date_available
 
       $filesize = $details[$thumb['id']]['filesize'];
       if (in_array('filesize', $thumbnail_metadata, true) && is_numeric($filesize) && $filesize > 0) {
-        // Piwigo stocke la taille en KB. On convertit en MB si c'est plus grand que 1024 KB.
         $metadata['filesize'] = ($filesize > 1024) ? round($filesize / 1024, 1) . ' MB' : $filesize . ' KB';
       }
       if (in_array('date_creation', $thumbnail_metadata, true)
@@ -448,25 +516,38 @@ SELECT id, file, filesize, date_creation, author, date_available
   return $tpl_thumbnails;
 }
 
+/**
+ * Recognizes the theme's table-of-content page.
+ *
+ * It runs when an index page starts and checks the requested page name. When
+ * it finds table_of_content, it fills in the page values that Piwigo and the
+ * theme need, including the section name, title, and body ID.
+ */
 function macadam_toc_section_init()
 {
   global $tokens, $page;
-  if (isset($tokens[0]) && $tokens[0] == 'table_of_content')
-  {
+  if (isset($tokens[0]) && $tokens[0] == 'table_of_content') {
     $page['section'] = 'table_of_content';
     $page['title'] = 'Table of content';
     $page['body_id'] = 'theTableOfContentPage';
-    $page['is_external'] = true; 
+    $page['is_external'] = true;
     $page['is_homepage'] = false;
   }
 }
 
+/**
+ * Displays the table of content inside Piwigo's normal page layout.
+ *
+ * It only runs after macadam_toc_section_init has found the right page. It
+ * makes sure the header data exists, gives the template empty category and
+ * thumbnail lists, renders table_of_content.tpl, and puts the result in
+ * Piwigo's CONTENT variable.
+ */
 function macadam_toc_page()
 {
   global $template, $page;
 
-  if (isset($page['section']) && $page['section'] == 'table_of_content')
-  {
+  if (isset($page['section']) && $page['section'] == 'table_of_content') {
     if (!isset($template->get_template_vars()['MACADAM_HEADER_ALBUMS'])) {
       macadam_get_header_albums();
     }

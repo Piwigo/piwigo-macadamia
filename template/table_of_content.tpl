@@ -45,14 +45,4 @@
   </ul>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.toc-album-item.has-sub-albums .album-toggle').forEach(function(toggle) {
-    toggle.addEventListener('click', function(e) {
-      e.stopPropagation();
-      var li = toggle.closest('.toc-album-item');
-      li.classList.toggle('expanded');
-    });
-  });
-});
-</script>
+{combine_script id='macadam.toc' load='footer' path='themes/macadam/js/toc.js'}

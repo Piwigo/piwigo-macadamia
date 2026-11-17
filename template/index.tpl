@@ -1,4 +1,6 @@
 {combine_script id='core.switchbox' load='async' require='jquery' path='themes/default/js/switchbox.js'}
+{combine_script id='macadam.index' load='footer' path='themes/macadam/js/index.js'}
+{combine_script id='macadam.switchboxes' load='footer' path='themes/macadam/js/switchboxes.js'}
 {combine_css path="themes/default/vendor/fontello/css/gallery-icon.css" order=-10}
 
 {if isset($errors) or isset($infos)}
@@ -26,11 +28,8 @@
 
     <div class="macadam-actions-zone">
       <ul>
-        {if isset($U_MODE_POSTED)}
-          <li><a href="{$U_MODE_POSTED}&amp;view=month"><i class="icon-calendar"></i></a>
-          </li>
-        {elseif isset($U_MODE_CREATED)}
-          <li><a href="{$U_MODE_CREATED}&amp;view=month"><i class="icon-calendar"></i></a>
+        {if isset($MACADAM_POSTED_CALENDAR_URL)}
+          <li><a href="{$MACADAM_POSTED_CALENDAR_URL}"><i class="icon-calendar"></i></a>
           </li>
         {/if}
 
@@ -43,7 +42,7 @@
 
         {* {if !empty($image_orders)}
           <li>
-            <a id="sortOrderLink" class="gallery-icon-th-large" rel="nofollow">🔢</a>
+            <a id="sortOrderLink" class="gallery-icon-th-large" rel="nofollow">ðŸ”¢</a>
             <div id="sortOrderBox" class="switchBox">
               <div class="switchBoxTitle">{'Sort order'|@translate}</div>
               {foreach from=$image_orders item=image_order name=loop}
@@ -56,8 +55,7 @@
                 {/if}
               {/foreach}
             </div>
-            {footer_script}(window.SwitchBox=window.SwitchBox||[]).push("#sortOrderLink",
-            "#sortOrderBox");{/footer_script}
+
           </li>
         {/if} *}
 
@@ -87,8 +85,7 @@
                         {/if}
                       {/foreach}
                     </div>
-                    {footer_script}(window.SwitchBox=window.SwitchBox||[]).push("#derivativeSwitchLink",
-                    "#derivativeSwitchBox");{/footer_script}
+
                   {/strip}
                 </div>
               {/if}
@@ -97,7 +94,7 @@
                 <div class="dropdown-item-sort">
                   <a id="sortOrderLink" class="dropdown-item gallery-icon-th-large" rel="nofollow" style="padding: 8px 10px;">
                     <i class="icon-arrow-left sort-order-arrow"></i>
-                    <i class="icon-heart"></i> <span>{'Sort order'|@translate}</span>
+                    <i class="icon-lines"></i> <span>{'Sort order'|@translate}</span>
                   </a>
                   <div id="sortOrderBox" class="switchBox">
                     <div class="switchBoxTitle">{'Sort order'|@translate}</div>
@@ -116,8 +113,7 @@
                       {/if}
                     {/foreach}
                   </div>
-                  {footer_script}(window.SwitchBox=window.SwitchBox||[]).push("#sortOrderLink",
-                  "#sortOrderBox");{/footer_script}
+
                 </div>
               {/if}
 
@@ -128,18 +124,6 @@
                   <span>{'slideshow'|@translate}</span>
                 </a>
               {/if}
-
-              {* {if isset($page.category_info.id)}
-                <a href="{$ROOT_URL}admin.php?page=photos_add&amp;album={$page.category_info.id}" class="dropdown-item btn-add-photos">
-                  <i class="icon-add"></i>
-                  <span>{'Add photos to the album'|@translate}</span>
-                </a>
-                {elseif isset($category.id)}
-                <a href="{$ROOT_URL}admin.php?page=photos_add&amp;album={$category.id}" class="dropdown-item btn-add-photos">
-                  <i class="icon-add"></i>
-                  <span>{'Add photos to the album'|@translate}</span>
-                </a>
-              {/if} *}
 
               {if !empty($U_EDIT)}
                 <a href="{$U_EDIT}" class="dropdown-item btn-edit-album">
@@ -216,17 +200,7 @@
     {/if}
 
     {if isset($FILE_CHRONOLOGY_VIEW)}
-      <div style="display:none" id="macadam-chronology-debug">
-        FILE_CHRONOLOGY_VIEW={$FILE_CHRONOLOGY_VIEW|escape}
-        | U_MODE_POSTED={if isset($U_MODE_POSTED)}{$U_MODE_POSTED|escape}{/if}
-        | U_MODE_CREATED={if isset($U_MODE_CREATED)}{$U_MODE_CREATED|escape}{/if}
-      </div>
       {include file=$FILE_CHRONOLOGY_VIEW}
-    {else}
-      <div style="display:none" id="macadam-chronology-debug">FILE_CHRONOLOGY_VIEW=unset |
-        U_MODE_POSTED={if isset($U_MODE_POSTED)}{$U_MODE_POSTED|escape}{/if} |
-        U_MODE_CREATED={if isset($U_MODE_CREATED)}{$U_MODE_CREATED|escape}{/if}
-      </div>
     {/if}
 
     {if !empty($CONTENT_DESCRIPTION)}
@@ -262,90 +236,5 @@
     {if !empty($PLUGIN_INDEX_CONTENT_END)}{$PLUGIN_INDEX_CONTENT_END}{/if}
   {/if}
 </div>
-
-{footer_script}
-document.addEventListener('DOMContentLoaded', function() {
-const container = document.querySelector('.macadam-albums-container');
-const photosContainer = document.getElementById('thumbnails');
-const toggleBtn = document.getElementById('toggleLayoutLink');
-const layoutIcon = toggleBtn ? toggleBtn.querySelector('i') : null;
-
-const configuredLayout = '{if isset($MACADAM_DEFAULT_LAYOUT) and $MACADAM_DEFAULT_LAYOUT == "list"}list{else}grid{/if}';
-const storedLayout = localStorage.getItem('macadam-preferred-layout');
-const currentLayout = storedLayout === 'grid' || storedLayout === 'list' ? storedLayout : configuredLayout;
-
-function applyLayout(layout) {
-const isGrid = layout === 'grid';
-if (layoutIcon) {
-layoutIcon.classList.toggle('icon-heart', isGrid);
-layoutIcon.classList.toggle('icon-grid', !isGrid);
-}
-if (container) {
-container.classList.toggle('view-grid', isGrid);
-container.classList.toggle('view-list', !isGrid);
-}
-if (photosContainer) {
-photosContainer.classList.toggle('view-grid-thumbnails', isGrid);
-photosContainer.classList.toggle('view-list-thumbnails', !isGrid);
-}
-}
-
-applyLayout(currentLayout);
-
-if (toggleBtn) {
-toggleBtn.addEventListener('click', function(e) {
-e.preventDefault();
-
-const nextLayout = container && container.classList.contains('view-grid') ? 'list' : 'grid';
-applyLayout(nextLayout);
-localStorage.setItem('macadam-preferred-layout', nextLayout);
-});
-}
-});
-
-
-document.querySelectorAll('.macadam-album-card').forEach(card => {
-card.addEventListener('click', e => {
-if (e.target.closest('a, button, .album-actions-trigger')) return;
-const thumbsLink = card.querySelector('.macadam-album-thumbs');
-if (thumbsLink) {
-window.location.href = thumbsLink.href;
-}
-});
-});
-
-(function() {
-const dropdownTrigger = document.querySelector('.js-album-dropdown-trigger');
-const dropdownMenu = document.querySelector('.album-dropdown-menu');
-const submenuLinks = document.querySelectorAll('#derivativeSwitchLink, #sortOrderLink');
-const submenuBoxes = document.querySelectorAll('#derivativeSwitchBox, #sortOrderBox');
-
-submenuLinks.forEach(function(link) {
-link.addEventListener('click', function() {
-const currentBoxId = link.id === 'derivativeSwitchLink' ? 'derivativeSwitchBox' : 'sortOrderBox';
-
-submenuBoxes.forEach(function(box) {
-if (box.id !== currentBoxId) {
-box.style.display = 'none';
-}
-});
-}, true);
-});
-
-if (dropdownTrigger && dropdownMenu) {
-dropdownTrigger.addEventListener('click', function(e) {
-e.preventDefault();
-e.stopPropagation();
-dropdownMenu.classList.toggle('show-menu');
-});
-
-document.addEventListener('click', function(e) {
-if (!dropdownMenu.contains(e.target) && !dropdownTrigger.contains(e.target)) {
-dropdownMenu.classList.remove('show-menu');
-}
-});
-}
-})();
-{/footer_script}
 
 {if !empty($PLUGIN_INDEX_CONTENT_AFTER)}{$PLUGIN_INDEX_CONTENT_AFTER}{/if}

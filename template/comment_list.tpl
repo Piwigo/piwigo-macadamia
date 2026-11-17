@@ -8,8 +8,8 @@
   min-height:{$comment_derivative_params->max_height()+5}px
 }
 {/html_style}{/strip}
-{footer_script}var error_icon = "{$ROOT_URL}{$themeconf.icon_dir}/errors_small.png";{/footer_script}
-<div class="loader"><img src="{$ROOT_URL}{$themeconf.img_dir}/ajax_loader.gif"></div>
+{combine_script id='macadam.comments' load='footer' path='themes/macadam/js/comments.js'}
+<div class="loader" data-error-icon="{$ROOT_URL}{$themeconf.icon_dir}/errors_small.png"><img src="{$ROOT_URL}{$themeconf.img_dir}/ajax_loader.gif"></div>
 {/if}
 <ul class="commentsList">
 {foreach from=$comments item=comment name=comment_loop}
@@ -63,7 +63,8 @@
     {if isset($comment.U_DELETE) or isset($comment.U_VALIDATE) or isset($comment.U_EDIT)}
     <div class="actions">
     {if isset($comment.U_DELETE)}
-      <a href="{$comment.U_DELETE}" onclick="return confirm('{'Are you sure?'|@translate|@escape:javascript}');">
+      <a href="{$comment.U_DELETE}" class="comment-delete-link"
+        data-confirm="{'Are you sure?'|@translate|@escape:html}">
         {'Delete'|@translate}
       </a>{if isset($comment.U_VALIDATE) or isset($comment.U_EDIT) or isset($comment.U_CANCEL)} | {/if}
     {/if}

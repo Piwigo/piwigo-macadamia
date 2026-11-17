@@ -32,13 +32,5 @@
     {/if}
   </nav>
 
-  {footer_script}
-  document.querySelectorAll('.macadam-pagination-select').forEach(function(select) {
-  select.addEventListener('change', function() {
-  if (this.value) {
-  window.location.href = this.value;
-  }
-  });
-  });
-  {/footer_script}
+  {combine_script id='macadam.navigation' load='footer' path='themes/macadam/js/navigation.js'}
 {/if}

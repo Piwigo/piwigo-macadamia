@@ -81,7 +81,7 @@
   {/if}
 </head>
 
-<body id="{$BODY_ID}" class="{foreach from=$BODY_CLASSES item=class}{$class} {/foreach}" data-infos='{$BODY_DATA}'>
+<body id="{$BODY_ID}" class="{foreach from=$BODY_CLASSES item=class}{$class} {/foreach}" data-infos='{$BODY_DATA}' data-macadam-default-layout="{if isset($MACADAM_DEFAULT_LAYOUT) and $MACADAM_DEFAULT_LAYOUT == 'list'}list{else}grid{/if}">
 
   <nav class="macadam-sidebar-nav">
     <div class="mobile-menu-overlay"></div>
@@ -92,7 +92,7 @@
 
       {* Dropdown container for Albums *}
       <div class="sidebar-dropdown-container sidebar-dropdown-container-album">
-        <a onclick="return false;" class="sidebar-icon-link sidebar-icon-link-drop"><i class="icon-structure"></i></a>
+        <a href="#" class="sidebar-icon-link sidebar-icon-link-drop"><i class="icon-structure"></i></a>
 
         <div class="sidebar-dropdown-menu album-menu">
           <i class="icon-cross usable-icon mobile-close-btn"></i>
@@ -157,12 +157,10 @@
         </div>
       </div>
 
-      {* <a href="{$U_MODE_CREATED|default:" `$ROOT_URL`index.php?/created-monthly"}" class="sidebar-icon-link"><i class="icon-add"></i></a> *}
-
       {* Dropdown container for Explore *}
       <div class="sidebar-dropdown-container">
         <a class="sidebar-icon-link sidebar-icon-link-drop">
-          <i class="icon-add"></i>
+          <i class="icon-compas-icon"></i>
         </a>
         <div class="sidebar-dropdown-menu">
           <i class="icon-cross usable-icon mobile-close-btn"></i>
@@ -301,7 +299,7 @@
             class="icon-person"></i></a>
       {else}
         <div class="sidebar-dropdown-container">
-          <a  onclick="return false;" class="sidebar-icon-link sidebar-icon-link-drop"><i class="icon-person"></i></a>
+          <a href="#" class="sidebar-icon-link sidebar-icon-link-drop"><i class="icon-person"></i></a>
           <div class="sidebar-dropdown-menu">
             <i class="icon-cross usable-icon mobile-close-btn"></i>
             <div class="dropdown-menu-title">{'Account'|translate}</div>
@@ -349,81 +347,7 @@
       {/if}
     </div>
 
-    {* Script to handle sub-albums toggle on click *}
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        var overlay = document.querySelector('.mobile-menu-overlay');
-
-        function closeAllMenus() {
-          document.querySelectorAll('.sidebar-dropdown-container.mobile-active').forEach(function(c) {
-            c.classList.remove('mobile-active');
-          });
-          if (overlay) overlay.classList.remove('active');
-          document.body.style.overflow = '';
-        }
-
-        if (overlay) {
-          overlay.addEventListener('click', function() {
-            closeAllMenus();
-          });
-        }
-
-        /* Align dropdown menu top with the vertical position of the button */
-        document.querySelectorAll('.sidebar-dropdown-container').forEach(function(container) {
-          var menu = container.querySelector('.sidebar-dropdown-menu');
-          if (menu) {
-            container.addEventListener('mouseenter', function() {
-              if (window.innerWidth > 768) {
-                var rect = container.getBoundingClientRect();
-                menu.style.top = rect.top - 21 + 'px';
-              }
-            });
-
-            var toggleBtn = container.querySelector('.sidebar-icon-link-drop');
-            if (toggleBtn) {
-              toggleBtn.addEventListener('click', function(e) {
-                if (window.innerWidth <= 768) {
-                  e.preventDefault();
-
-                  if (container.classList.contains('mobile-active')) {
-                    container.classList.remove('mobile-active');
-                    document.body.style.overflow = '';
-                    return;
-                  }
-
-                  document.querySelectorAll('.sidebar-dropdown-container.mobile-active').forEach(function(
-                    activeContainer) {
-                    activeContainer.classList.remove('mobile-active');
-                  });
-
-                  container.classList.add('mobile-active');
-                  document.body.style.overflow = 'hidden';
-                }
-              });
-            }
-
-            var closeBtn = container.querySelector('.mobile-close-btn');
-            if (closeBtn) {
-              closeBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                closeAllMenus();
-              });
-            }
-          }
-        });
-      });
-    </script>
-    {footer_script}
-    jQuery(document).ready(function($) {
-    $('.sidebar-dropdown-menu').on('click', '.album-toggle', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    $(this).toggleClass('open');
-    $(this).closest('li').children('.sub-album-list').slideToggle(250);
-    });
-    });
-    {/footer_script}
+    {combine_script id='macadam.header' load='footer' require='jquery' path='themes/macadam/js/header.js'}
   </nav>
 
   <div id="the_page" class="macadam-main-container">

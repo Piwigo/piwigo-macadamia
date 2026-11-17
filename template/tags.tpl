@@ -1,3 +1,4 @@
+{combine_script id='macadam.switchboxes' load='footer' path='themes/macadam/js/switchboxes.js'}
 {if isset($MENUBAR)}{$MENUBAR}{/if}
 <div id="content" class="content{if isset($MENUBAR)} contentWithMenu{/if} contentTags">
 
@@ -20,11 +21,8 @@
 
     <div class="macadam-actions-zone">
       <ul>
-        {if isset($U_MODE_POSTED)}
-          <li><a href="{$U_MODE_POSTED}&amp;view=month"><i class="icon-calendar"></i></a>
-          </li>
-        {elseif isset($U_MODE_CREATED)}
-          <li><a href="{$U_MODE_CREATED}&amp;view=month"><i class="icon-calendar"></i></a>
+        {if isset($MACADAM_POSTED_CALENDAR_URL)}
+          <li><a href="{$MACADAM_POSTED_CALENDAR_URL}"><i class="icon-calendar"></i></a>
           </li>
         {/if}
 
@@ -60,8 +58,7 @@
                         {/if}
                       {/foreach}
                     </div>
-                    {footer_script}(window.SwitchBox=window.SwitchBox||[]).push("#derivativeSwitchLink",
-                    "#derivativeSwitchBox");{/footer_script}
+
                   {/strip}
                 </div>
               {/if}
@@ -84,8 +81,7 @@
                       {/if}
                     {/foreach}
                   </div>
-                  {footer_script}(window.SwitchBox=window.SwitchBox||[]).push("#sortOrderLink",
-                  "#sortOrderBox");{/footer_script}
+
                 </div>
               {/if}
 

@@ -254,6 +254,7 @@
   font-size: 12px;
   line-height: 100%;
   letter-spacing: 0%;
+  color: var(--color-brand-dark);
 }
 
 .photo-meta {

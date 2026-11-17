@@ -16,7 +16,6 @@ $lang['Notifications'] = 'Notifications';
 $lang['Add photos'] = 'Add photos';
 $lang['Edit photos'] = 'Edit photos';
 $lang['footer p'] = 'Manage online your image library with Piwigo';
-$lang['Éditer la photo'] = 'Edit photo';
 $lang['Add a comment'] = 'Add a comment';
 $lang['Add photos to the album'] = 'Add photos to the album';
 $lang['Add to favorites'] = 'Add to favorites';

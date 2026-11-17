@@ -145,6 +145,10 @@ BODY {
   font-size: 24px !important;
 }
 
+.macadam-index-bar .uc-icon-star-filled:hover, .uc-icon-star:hover {
+  color: var(--menu-icon-hover);
+}
+
 .dropdown-item .uc-icon-star-filled::before {
   margin-left: 0px !important;
 }

@@ -7,11 +7,10 @@
   }
   {/html_style}{/strip}
 
-  {footer_script}
-  var error_icon = "{$ROOT_URL}{$themeconf.icon_dir}/errors_small.png", max_requests = {$maxRequests};
-  {/footer_script}
+  {combine_script id='macadam.albums' load='footer' require='jquery' path='themes/macadam/js/albums.js'}
+  {combine_script id='macadam.thumbnail-config' load='footer' path='themes/macadam/js/thumbnail-config.js'}
 
-  <div class="loader"><img src="{$ROOT_URL}{$themeconf.img_dir}/ajax_loader.gif"></div>
+  <div class="loader" data-error-icon="{$ROOT_URL}{$themeconf.icon_dir}/errors_small.png"><img src="{$ROOT_URL}{$themeconf.img_dir}/ajax_loader.gif"></div>
 
   {function name=render_album_cards albums=$category_thumbnails depth=0 pwg=$pwg derivative_params=$derivative_params}
     {foreach from=$albums item=cat name=cat_loop}
@@ -143,63 +142,3 @@
 <div class="macadam-albums-container macadam-main-grid-active">
   {call name=render_album_cards albums=$category_thumbnails depth=0 pwg=$pwg derivative_params=$derivative_params}
 </div>
-
-{footer_script}
-jQuery(document).ready(function($) {
-
-  $(document).on('click', '.album-sub-toggle', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    var $wrapper = $(this).closest('.album-wrapper');
-    var $subContainer = $wrapper.children('.sub-albums-container');
-
-    $(this).toggleClass('open');
-    $subContainer.slideToggle(250);
-  });
-  $(document).on('click', '.album-actions-trigger', function(e) {
-    e.stopPropagation();
-    
-    var $currentMenu = $(this).children('.album-dropdown-menu');
-    $('.album-dropdown-menu').not($currentMenu).removeClass('is-active');
-    
-    $currentMenu.toggleClass('is-active');
-  });
-
-  $(document).on('click', function() {
-    $('.album-dropdown-menu').removeClass('is-active');
-  });
-
-  $(document).on('click', '.album-dropdown-menu .dropdown-item', function(e) {
-    
-    if ($(this).hasClass('btn-add-photos') || $(this).hasClass('btn-edit-album')) {
-      e.stopPropagation(); 
-      $('.album-dropdown-menu').removeClass('is-active'); 
-      return;
-    }
-    e.preventDefault();
-    e.stopPropagation(); 
-    
-    var $card = $(this).closest('.macadam-album-card');
-    var albumId = $card.data('id');
-    
-    if ($(this).hasClass('btn-share-album')) {
-      var hasLink = $(this).data('has-link');
-      var shareUrl = $(this).data('share-url');
-      
-      if (hasLink && shareUrl) {
-        console.log("Lien de partage existant pour l'album " + albumId + " : " + shareUrl);
-        navigator.clipboard.writeText(shareUrl).then(function() {
-          alert("Lien de partage copié dans le presse-papier !");
-        });
-      } else {
-        console.log("Aucun lien existant pour l'album " + albumId + ". Redirection vers l'administration.");
-        window.location.href = "admin.php?page=plugin-ShareAlbum-albums";
-      }
-    }
-    
-    $('.album-dropdown-menu').removeClass('is-active');
-  });
-
-});
-{/footer_script}

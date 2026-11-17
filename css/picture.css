@@ -29,7 +29,6 @@
   border-radius: 8px;
   padding: 0;
   overflow: auto;
-  scrollbar-gutter: stable;
   min-height: 400px;
 }
 
@@ -120,7 +119,7 @@
   box-sizing: border-box;
   background-color: var(--color-surface-blue);
   border-radius: 5px;
-  border: 1px solid #C1C1C1;
+  border: 1px solid var(--color-border-dark);
   overflow: hidden;
 }
 
@@ -134,11 +133,11 @@
 .strip-thumb-item:hover {
   opacity: 1 !important;
   transform: none !important;
-  border-color: #C1C1C1 !important;
+  border-color: var(--color-border-dark) !important;
   box-shadow: none !important;
   filter: none !important;
   transition: none !important;
-  border: 1px solid #C1C1C1;
+  border: 1px solid var(--color-border-dark);
 }
 
 .strip-thumb-placeholder {
@@ -210,7 +209,6 @@ body.thePicturePage #content.contentWithMenu {
 
 .sidebar-scrollable-content {
   padding: 20px;
-  overflow-y: auto;
 }
 
 .tag-badges-container {
@@ -279,77 +277,124 @@ ul.macadam-info-list li a:hover {
 
 ul.macadam-info-list li i {
   font-size: 16px;
-  margin-right: 10px;
+  margin-right: 7px;
   color: var(--color-text-muted);
 }
 
 ul.macadam-info-list li i.icon-eye {
   font-size: 13px;
-  margin-right: 15px;
+  margin-right: 12px;
 }
 
 ul.macadam-info-list li i.icon-folder {
   font-size: 13px;
-  margin-right: 14px;
+  margin-right: 11px;
   margin-left: 2px;
 }
 
-.rating-buttons {
+ul.macadam-info-list li#ratingInfo {
   display: flex;
   align-items: center;
-  gap: 4px;
+  white-space: nowrap;
 }
 
-.rating-star {
-  position: relative;
-  display: inline-flex;
-  color: var(--color-border-light);
-  font-size: 24px;
-  line-height: 1;
+.open-rating-form {
+  margin-left: 10px;
+  border-radius: 5px;
+  border-width: 1px;
+  padding-top: 3px;
+  padding-right: 9px;
+  padding-bottom: 3px;
+  padding-left: 6px;
+  border: 1px solid var(--color-border-dark);
+  background: var(--color-surface-blue);
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--color-text-gray-deep);
+  white-space: nowrap;
   cursor: pointer;
-  transition: color 0.2s ease, transform 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.rating-star input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  pointer-events: none;
+.open-rating-form i {
+  font-size: 12px !important;
+  color: var(--color-brand-muted) !important;
+  margin-right: 0px !important;
+  transition: color 0.2s ease;
 }
 
-.rating-star:hover,
-.rating-star:has(input:focus-visible) {
-  color: var(--menu-icon-hover);
-  transform: scale(1.1);
+.open-rating-form:hover {
+  background-color: var(--color-brand-muted);
+  color: var(--color-white) !important;
 }
 
-.rating-star:has(.rateButtonSelected) {
-  color: var(--menu-icon-hover);
+.open-rating-form:hover i {
+  color: var(--color-white) !important;
 }
 
-.rating-reset {
-  position: relative;
-  display: inline-flex;
-  color: var(--color-text-muted);
-  font-size: 16px;
-  line-height: 1;
+.interactive-rating-form {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin-left: 10px;
+}
+
+.interactive-rating-form i {
+  font-size: 13px !important;
+  color: var(--color-brand-muted) !important;
+  margin-right: 0px !important;
+}
+
+.interactive-rating-stars,
+.interactive-rating-actions {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.interactive-rating-star {
+  padding: 0;
+  border: 0;
+  background: transparent;
   cursor: pointer;
-  transition: color 0.2s ease, transform 0.2s ease;
 }
 
-.rating-reset input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  pointer-events: none;
+.interactive-rating-submit {
+  padding: 4px;
+  border: 1px solid var(--color-border-dark);
+  color: var(--color-brand-muted);
+  background-color: var(--color-surface-blue);
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s ease;
 }
 
-.rating-reset:hover,
-.rating-reset:has(input:focus-visible) {
-  color: var(--menu-icon-hover);
-  transform: scale(1.1);
+.interactive-rating-submit i {
+  transition: color 0.2s ease;
+}
+
+.interactive-rating-submit:hover {
+  background-color: var(--color-brand-muted);
+}
+
+.interactive-rating-submit:hover i {
+  color: var(--color-white) !important;
+}
+
+.interactive-rating-form .interactive-rating-close {
+  background: transparent;
+  border: none;
+}
+
+.interactive-rating-form .interactive-rating-close i {
+  font-size: 12px;
+  color: var(--color-border-dark) !important;
+  transition: color 0.2s ease;
+}
+
+.interactive-rating-form .interactive-rating-close:hover i {
+  color: var(--color-text-medium) !important;
 }
 
 .comment-toggle-button {
