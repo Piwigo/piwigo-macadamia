@@ -1,5 +1,6 @@
 
 .icon-basket:before { content: '\e800'; } /* '' */
+.icon-th-list:before { content: '\e800'; } /* '' */
 .icon-exit-fullscreen:before { content: '\e801'; } /* '' */
 .icon-cross:before { content: '\e802'; } /* '' */
 .icon-plus:before { content: '\e803'; } /* '' */
@@ -37,3 +38,4 @@
 .icon-share:before { content: '\e824'; } /* '' */
 .icon-structure:before { content: '\e825'; } /* '' */
 .icon-three-dot:before { content: '\e826'; } /* '' */
+.icon-compas-icon:before { content: '\e84c'; } /* '' */
