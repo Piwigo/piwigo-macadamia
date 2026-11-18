@@ -187,10 +187,8 @@
   box-sizing: border-box;
   min-width: 0;
   background: var(--color-white);
-  border: 1px solid var(--color-border-lighter);
   border-radius: 5px;
   overflow: visible;
-  box-shadow: 0 2px 6px var(--color-transparent-black-03);
   border: 1px solid var(--color-border-dark);
   color: inherit;
 }
@@ -204,7 +202,7 @@
   display: block;
   overflow: hidden;
   border-radius: 4px 4px 0 0;
-  background-color: var(--color-surface-blue);
+  background-color: var(--color-variable-5);
   text-decoration: none !important;
 }
 
@@ -254,7 +252,7 @@
   font-size: 12px;
   line-height: 100%;
   letter-spacing: 0%;
-  color: var(--color-brand-dark);
+  color: var(--color-variable-1);
 }
 
 .photo-meta {
@@ -279,12 +277,12 @@
 
 .photo-actions-trigger i {
   font-size: 16px;
-  color: var(--menu-icon);
+  color: var(--color-variable-1);
   transition: color 0.3s ease;
 }
 
 .photo-actions-trigger i:hover {
-  color: var(--menu-icon-hover);
+  color: var(--color-variable-4);
 }
 
 /* PICTURE POPUP */
@@ -315,7 +313,7 @@
   align-items: center;
   gap: 12px;
   padding: 10px 16px;
-  color: var(--color-brand-dark);
+  color: var(--color-variable-1);
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
@@ -324,14 +322,14 @@
 
 
 .pic-dropdown-menu .dropdown-item:hover {
-  background-color: var(--color-surface-pale);
-  color: var(--color-brand-dark);
+  background-color: var(--color-surface-light);
+  color: var(--color-variable-1);
 }
 
 
 .pic-dropdown-menu .dropdown-item i {
   font-size: 1.1rem;
-  color: var(--color-brand-dark);
+  color: var(--color-variable-1);
   width: 20px;
   text-align: center;
 }

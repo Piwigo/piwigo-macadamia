@@ -13,6 +13,11 @@ if (isset($_POST['submit_macadam'])) {
   }
 
   $config_send['default_layout'] = $default_layout;
+  $color_scheme = isset($_POST['color_scheme']) ? $_POST['color_scheme'] : 'blue';
+  if (!in_array($color_scheme, array('blue', 'green', 'orange', 'pink', 'bluenight', 'grayscale'), true)) {
+    $color_scheme = 'blue';
+  }
+  $config_send['color_scheme'] = $color_scheme;
   $config_send['header_image_id'] = isset($_POST['header_image_id'])
     ? max(0, intval($_POST['header_image_id']))
     : 0;
@@ -40,6 +45,10 @@ if (!is_array($options)) {
 if (!isset($options['default_layout']) || !in_array($options['default_layout'], array('grid', 'list'), true)) {
   $options['default_layout'] = 'grid';
 }
+$options['color_scheme'] = isset($options['color_scheme'])
+  && in_array($options['color_scheme'], array('blue', 'green', 'orange', 'pink', 'bluenight', 'grayscale'), true)
+  ? $options['color_scheme']
+  : 'blue';
 $options['header_image_id'] = isset($options['header_image_id']) ? intval($options['header_image_id']) : 0;
 $options['header_height_mode'] = isset($options['header_height_mode'])
   && in_array($options['header_height_mode'], array('pixels', 'fullscreen'), true)

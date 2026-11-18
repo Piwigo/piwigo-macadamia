@@ -81,7 +81,7 @@
   {/if}
 </head>
 
-<body id="{$BODY_ID}" class="{foreach from=$BODY_CLASSES item=class}{$class} {/foreach}" data-infos='{$BODY_DATA}' data-macadam-default-layout="{if isset($MACADAM_DEFAULT_LAYOUT) and $MACADAM_DEFAULT_LAYOUT == 'list'}list{else}grid{/if}">
+<body id="{$BODY_ID}" class="{foreach from=$BODY_CLASSES item=class}{$class} {/foreach}macadam-chroma-{if isset($MACADAM_COLOR_SCHEME)}{$MACADAM_COLOR_SCHEME}{else}blue{/if}" data-infos='{$BODY_DATA}' data-macadam-default-layout="{if isset($MACADAM_DEFAULT_LAYOUT) and $MACADAM_DEFAULT_LAYOUT == 'list'}list{else}grid{/if}">
 
   <nav class="macadam-sidebar-nav">
     <div class="mobile-menu-overlay"></div>

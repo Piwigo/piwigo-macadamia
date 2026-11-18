@@ -24,7 +24,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: var(--color-surface);
+  background: var(--color-variable-5);
   border: 1px solid var(--color-border-lighter);
   border-radius: 8px;
   padding: 0;
@@ -51,7 +51,7 @@
 .macadam-nav-arrow {
   min-width: 45px;
   height: 45px;
-  background-color: var(--menu-icon);
+  background-color: var(--color-variable-1);
   color: var(--color-white) !important;
   border-radius: 6px;
   display: flex;
@@ -67,7 +67,7 @@
 }
 
 .macadam-nav-arrow:not(.disabled):hover {
-  background-color: var(--menu-icon-hover) !important;
+  background-color: var(--color-variable-4) !important;
 }
 
 .macadam-nav-arrow i {
@@ -81,7 +81,7 @@
 .macadam-nav-arrow.arrow-fullscreen.disabled,
 .macadam-nav-arrow.disabled {
   background-color: var(--color-border-lighter);
-  color: var(--color-text-silver) !important;
+  color: var(--color-text-gray-light) !important;
   cursor: not-allowed;
   transform: none;
 }
@@ -93,7 +93,6 @@
   overflow-x: auto;
   gap: 12px;
   padding: 15px;
-  background-color: var(--color-surface-gray);
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -117,7 +116,7 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  background-color: var(--color-surface-blue);
+  background-color: var(--color-variable-5);
   border-radius: 5px;
   border: 1px solid var(--color-border-dark);
   overflow: hidden;
@@ -157,7 +156,7 @@
   display: flex;
   width: 100%;
   min-height: calc(100vh - 80px);
-  background-color: var(--color-surface-soft);
+  background-color: var(--color-background);
   padding-right: 350px;
   box-sizing: border-box;
 }
@@ -200,11 +199,13 @@ body.thePicturePage #content.contentWithMenu {
   cursor: pointer;
   transition: background 0.2s;
   border-bottom: 1px solid var(--color-border-light);
+  color: var(--color-text-muted);
 }
 
 .sidebar-tabs .tab-btn.active {
-  border-bottom: 5px solid var(--color-text-muted-dark);
+  border-bottom: 5px solid var(--color-variable-1);
   font-weight: bold;
+  color: var(--color-variable-1);
 }
 
 .sidebar-scrollable-content {
@@ -226,7 +227,7 @@ body.thePicturePage #content.contentWithMenu {
 }
 
 .macadam-tag-badge {
-  background-color: var(--color-brand-muted);
+  background-color: var(--color-variable-3);
   color: var(--color-white);
   padding: 6px 14px;
   border-radius: 6px;
@@ -267,12 +268,16 @@ ul.macadam-info-list li {
 }
 
 ul.macadam-info-list li a {
-  color: var(--color-brand-hover);
+  color: var(--color-variable-4);
   transition: color 0.2s ease;
 }
 
 ul.macadam-info-list li a:hover {
-  color: var(--color-brand-muted) !important;
+  color: var(--color-variable-3) !important;
+}
+
+ul.macadam-info-list li .info-value {
+  color: var(--color-black);
 }
 
 ul.macadam-info-list li i {
@@ -307,7 +312,7 @@ ul.macadam-info-list li#ratingInfo {
   padding-bottom: 3px;
   padding-left: 6px;
   border: 1px solid var(--color-border-dark);
-  background: var(--color-surface-blue);
+  background: var(--color-variable-5);
   font-weight: 600;
   font-size: 12px;
   color: var(--color-text-gray-deep);
@@ -318,13 +323,13 @@ ul.macadam-info-list li#ratingInfo {
 
 .open-rating-form i {
   font-size: 12px !important;
-  color: var(--color-brand-muted) !important;
+  color: var(--color-variable-3) !important;
   margin-right: 0px !important;
   transition: color 0.2s ease;
 }
 
 .open-rating-form:hover {
-  background-color: var(--color-brand-muted);
+  background-color: var(--color-variable-3);
   color: var(--color-white) !important;
 }
 
@@ -341,7 +346,7 @@ ul.macadam-info-list li#ratingInfo {
 
 .interactive-rating-form i {
   font-size: 13px !important;
-  color: var(--color-brand-muted) !important;
+  color: var(--color-variable-3) !important;
   margin-right: 0px !important;
 }
 
@@ -362,8 +367,8 @@ ul.macadam-info-list li#ratingInfo {
 .interactive-rating-submit {
   padding: 4px;
   border: 1px solid var(--color-border-dark);
-  color: var(--color-brand-muted);
-  background-color: var(--color-surface-blue);
+  color: var(--color-variable-3);
+  background-color: var(--color-variable-5);
   border-radius: 5px;
   cursor: pointer;
   font-size: 12px;
@@ -375,7 +380,7 @@ ul.macadam-info-list li#ratingInfo {
 }
 
 .interactive-rating-submit:hover {
-  background-color: var(--color-brand-muted);
+  background-color: var(--color-variable-3);
 }
 
 .interactive-rating-submit:hover i {
@@ -389,7 +394,7 @@ ul.macadam-info-list li#ratingInfo {
 
 .interactive-rating-form .interactive-rating-close i {
   font-size: 12px;
-  color: var(--color-border-dark) !important;
+  color: var(--color-font-dark) !important;
   transition: color 0.2s ease;
 }
 
@@ -406,7 +411,7 @@ ul.macadam-info-list li#ratingInfo {
   padding: 0;
   border: none;
   border-radius: 6px;
-  background-color: var(--menu-icon);
+  background-color: var(--color-variable-1);
   color: var(--color-white);
   cursor: pointer;
   font-size: 1rem;
@@ -414,7 +419,7 @@ ul.macadam-info-list li#ratingInfo {
 }
 
 .comment-toggle-button:hover {
-  background-color: var(--menu-icon-hover);
+  background-color: var(--color-variable-4);
 }
 
 .comment-toggle-button::before {
@@ -469,14 +474,14 @@ ul.macadam-info-list li#ratingInfo {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--menu-icon);
+  color: var(--color-variable-1);
   cursor: pointer;
   transition: color 0.2s ease;
 }
 
 .fullscreen-icon-container:hover,
 .fullscreen-icon-container:hover i {
-  color: var(--menu-icon-hover) !important;
+  color: var(--color-variable-4) !important;
 }
 
 .js-picture-dropdown-trigger {
@@ -489,12 +494,12 @@ ul.macadam-info-list li#ratingInfo {
 .js-picture-dropdown-trigger i {
   font-size: 1.5rem;
   transition: color 0.3s ease;
-  color: var(--menu-icon);
+  color: var(--color-variable-1);
 }
 
 .js-picture-dropdown-trigger:hover i,
 .macadam-dropdown-actions .dropdown-container:hover > .js-picture-dropdown-trigger i {
-  color: var(--menu-icon-hover) !important;
+  color: var(--color-variable-4) !important;
 }
 
 .macadam-dropdown-actions .dropdown-container > .album-dropdown-menu {
@@ -509,14 +514,14 @@ ul.macadam-info-list li#ratingInfo {
 .macadam-actions-zone .album-dropdown-menu .dropdown-item > .pwg-button,
 .macadam-actions-zone .album-dropdown-menu .dropdown-item > a i,
 .macadam-actions-zone .album-dropdown-menu .dropdown-item > .pwg-button i {
-  color: var(--color-brand-dark) !important;
+  color: var(--color-variable-1) !important;
 }
 
 .macadam-actions-zone .album-dropdown-menu .dropdown-item:hover > a,
 .macadam-actions-zone .album-dropdown-menu .dropdown-item:hover > .pwg-button,
 .macadam-actions-zone .album-dropdown-menu .dropdown-item:hover > a i,
 .macadam-actions-zone .album-dropdown-menu .dropdown-item:hover > .pwg-button i {
-  color: var(--color-brand-dark) !important;
+  color: var(--color-variable-1) !important;
 }
 
 .macadam-actions-zone .album-dropdown-menu .dropdown-item.plugin-injected > .pwg-button {
@@ -524,7 +529,7 @@ ul.macadam-info-list li#ratingInfo {
   align-items: center;
   gap: 8px;
   width: 100%;
-  color: var(--color-brand-dark) !important;
+  color: var(--color-variable-1) !important;
   font-size: 0.9rem;
   text-decoration: none !important;
 }
@@ -565,7 +570,7 @@ ul.macadam-info-list li#ratingInfo {
 }
 
 .macadam-actions-zone .album-dropdown-menu .dropdown-item.has-switchbox:has(#derivativeSwitchBox[style*="display: block"]) {
-  background-color: var(--color-brand-muted) !important;
+  background-color: var(--color-variable-3) !important;
   color: var(--color-white) !important;
 }
 
@@ -575,7 +580,7 @@ ul.macadam-info-list li#ratingInfo {
 }
 
 .macadam-actions-zone .album-dropdown-menu:has(> .dropdown-item.has-switchbox #derivativeSwitchBox[style*="display: block"]) > i.index {
-  color: var(--color-brand-dark) !important;
+  color: var(--color-variable-1) !important;
   display: block !important;
 }
 
@@ -586,7 +591,7 @@ ul.macadam-info-list li#ratingInfo {
   width: 100%;
   min-height: 30px;
   padding: 5px 16px 5px 40px !important;
-  color: var(--color-brand-dark) !important;
+  color: var(--color-variable-1) !important;
   font-size: 14px !important;
   text-decoration: none !important;
 }
@@ -600,7 +605,7 @@ ul.macadam-info-list li#ratingInfo {
   position: absolute;
   left: 10px;
   min-width: 20px;
-  color: var(--color-brand-muted);
+  color: var(--color-variable-3);
   font-size: 14px;
 }
 
@@ -641,7 +646,7 @@ ul.macadam-info-list li#ratingInfo {
 }
 
 #downloadSwitchBox .downloadformatDetails {
-  color: var(--color-text-soft) !important;
+  color: var(--color-text-gray) !important;
   font-size: 11px !important;
 }
 
@@ -727,7 +732,7 @@ li.commentElement .commentEmail a {
 }
 
 li.commentElement .commentDate {
-  color: var(--color-text-light) !important;
+  color: var(--color-text-gray-deep) !important;
   font-size: 0.85rem;
   font-weight: 400 !important;
   font-style: italic;
@@ -743,7 +748,7 @@ li.commentElement blockquote {
 li.commentElement blockquote div {
   font-size: 0.9rem !important;
   line-height: 1.5 !important;
-  color: var(--color-text-slate) !important;
+  color: var(--color-text-gray-deep) !important;
   font-style: normal !important;
 }
 
@@ -759,14 +764,14 @@ li.commentElement .actions {
 }
 
 li.commentElement .actions a {
-  color: var(--color-brand-hover) !important;
+  color: var(--color-variable-4) !important;
   text-decoration: none !important;
   font-weight: 500;
   transition: color 0.15s ease;
 }
 
 li.commentElement .actions a:hover {
-  color: var(--color-brand-hover) !important;
+  color: var(--color-variable-4) !important;
 }
 
 li.commentElement .actions a[href*="delete"]:hover {
@@ -777,8 +782,8 @@ li.commentElement .actions a[href*="delete"]:hover {
 
 #commentAdd h4 {
   margin: 0 0 24px;
-  color: var(--color-text-heading);
-  font-size: 1.5rem;
+  color: var(--color-text-gray-deep);
+  font-size: 14px;
   font-weight: 700;
 }
 
@@ -828,7 +833,7 @@ li.commentElement .actions a[href*="delete"]:hover {
 #commentAdd textarea:focus {
   background-color: var(--color-border-light) !important;
   outline: none;
-  box-shadow: 0 0 0 2px var(--color-brand-pale);
+  box-shadow: 0 0 0 2px var(--color-album-badges);
 }
 
 #commentAdd p:last-child {
@@ -867,7 +872,7 @@ li.commentElement .actions a[href*="delete"]:hover {
   right: 20px;
   background: none;
   border: none;
-  color: var(--color-surface-blue);
+  color: var(--color-variable-5);
   cursor: pointer;
   flex-direction: column;
   align-items: center;
@@ -886,7 +891,7 @@ li.commentElement .actions a[href*="delete"]:hover {
 }
 
 .macadam-picture-container.macadam-in-fullscreen {
-  background-color: var(--color-text-darkest) !important;
+  background-color: var(--color-bg-fullscreen) !important;
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -904,8 +909,8 @@ li.commentElement .actions a[href*="delete"]:hover {
 }
 
 .macadam-nav-arrow.arrow-fullscreen {
-  background-color: var(--color-surface-blue) !important;
-  color: var(--color-brand-dark) !important;
+  background-color: var(--color-variable-5) !important;
+  color: var(--color-variable-1) !important;
   cursor: pointer;
 }
 
@@ -968,15 +973,10 @@ li.commentElement .actions a[href*="delete"]:hover {
   display: flex;
 }
 
-.arrow-mobile,
-.macadam-header-search{
-  display: none !important;
-}
-
 #breadcrumb h2 a:hover,
 #breadcrumb h2 a:hover i,
 #breadcrumb h2 a:hover i::before {
-  color: var(--menu-icon-hover) !important;
+  color: var(--color-variable-4) !important;
 }
 
 /* MEDIA  */

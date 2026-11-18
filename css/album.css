@@ -46,7 +46,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  background-color: var(--color-accent-soft);
+  background-color: var(--color-thumb-main);
 }
 
 .sub-thumbs-container {
@@ -72,11 +72,11 @@
 }
 
 .thumb-sub-block.sub-orange {
-  background-color: var(--color-accent-peach);
+  background-color: var(--color-thumb-sub-2);
 }
 
 .thumb-sub-block.sub-beige {
-  background-color: var(--color-accent-yellow);
+  background-color: var(--color-thumb-sub-1);
 }
 
 .macadam-album-infos {
@@ -153,13 +153,13 @@
 .album-actions-trigger i {
   font-size: 16px;
   transition: color 0.3s ease;
-  color: var(--menu-icon);
+  color: var(--color-variable-1);
 }
 
 .album-footer-icon .album-sub-toggle  {
   font-size: 10px;
   transition: color 0.3s ease;
-  color: var(--menu-icon);
+  color: var(--color-variable-1);
   margin-right: 11px;
 }
 
@@ -175,7 +175,7 @@
 
 .album-footer-icon .album-sub-toggle i:hover,
 .album-actions-trigger i:hover {
-  color: var(--menu-icon-hover);
+  color: var(--color-variable-4);
 }
 
 .sub-albums-container {
@@ -296,7 +296,7 @@
   align-items: center;
   gap: 12px;
   padding: 10px 16px;
-  color: var(--color-brand-dark);
+  color: var(--color-variable-1);
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
@@ -305,14 +305,14 @@
 
 
 .album-dropdown-menu .dropdown-item:hover {
-  background-color: var(--color-surface-pale);
-  color: var(--color-brand-dark);
+  background-color: var(--color-surface-light);
+  color: var(--color-variable-1);
 }
 
 
 .album-dropdown-menu .dropdown-item i {
   font-size: 1.1rem;
-  color: var(--color-brand-dark);
+  color: var(--color-variable-1);
   width: 20px;
   text-align: center;
 }

@@ -8,7 +8,6 @@
 }
 
 #configContent .property {
-  padding-top: 8px;
   font-weight: bold;
   width: 100%;
   text-align: start;
@@ -117,6 +116,53 @@
                 id="default_layout_list"
                 {if $options.default_layout == 'list'}checked="checked"{/if}>
               {'List'|@translate}
+            </label>
+          </div>
+        </li>
+      </ul>
+    </fieldset>
+
+    <fieldset>
+      <legend>{'Appearance options'|@translate}</legend>
+      <ul>
+        <li>
+          <span class="property">{'Color scheme'|@translate}</span>
+          <div class="option-group">
+            <label for="color_scheme_blue">
+              <input type="radio" name="color_scheme" value="blue"
+                id="color_scheme_blue"
+                {if $options.color_scheme == 'blue'}checked="checked"{/if}>
+              {'Blue'|@translate}
+            </label>
+            <label for="color_scheme_green">
+              <input type="radio" name="color_scheme" value="green"
+                id="color_scheme_green"
+                {if $options.color_scheme == 'green'}checked="checked"{/if}>
+              {'Green'|@translate}
+            </label>
+            <label for="color_scheme_orange">
+              <input type="radio" name="color_scheme" value="orange"
+                id="color_scheme_orange"
+                {if $options.color_scheme == 'orange'}checked="checked"{/if}>
+              {'Orange'|@translate}
+            </label>
+            <label for="color_scheme_pink">
+              <input type="radio" name="color_scheme" value="pink"
+                id="color_scheme_pink"
+                {if $options.color_scheme == 'pink'}checked="checked"{/if}>
+              {'Pink'|@translate}
+            </label>
+            <label for="color_scheme_bluenight">
+              <input type="radio" name="color_scheme" value="bluenight"
+                id="color_scheme_bluenight"
+                {if $options.color_scheme == 'bluenight'}checked="checked"{/if}>
+              {'Blue Night'|@translate}
+            </label>
+            <label for="color_scheme_grayscale">
+              <input type="radio" name="color_scheme" value="grayscale"
+                id="color_scheme_grayscale"
+                {if $options.color_scheme == 'grayscale'}checked="checked"{/if}>
+              {'Grayscale'|@translate}
             </label>
           </div>
         </li>

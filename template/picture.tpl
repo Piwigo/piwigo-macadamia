@@ -383,3 +383,9 @@
   </div>
   {if !empty($PLUGIN_PICTURE_AFTER)}{$PLUGIN_PICTURE_AFTER}{/if}
 </div>
+<style>
+.arrow-mobile,
+.macadam-header-search{
+  display: none !important;
+}
+</style>

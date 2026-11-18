@@ -45,7 +45,7 @@
         {combine_script id='thumbnails.loader' path='themes/default/js/thumbnails.loader.js' require='jquery.ajaxmanager' load='footer'}
       {/if}
 
-      <div class="macadam-album-card" data-id="{$cat.id}" data-parent="{$cat.id_UP|default:0}" {if $depth > 0}style="margin-left: {$depth * 55}px; width: calc(100% - {$depth * 55}px); background: #F6F7FF;" {/if}>
+      <div class="macadam-album-card" data-id="{$cat.id}" data-parent="{$cat.id_UP|default:0}" {if $depth > 0}style="margin-left: {$depth * 55}px; width: calc(100% - {$depth * 55}px); background: var(--color-variable-5);" {/if}>
 
         <a href="{$cat.URL}" class="macadam-album-thumbs">
           <div class="main-thumb-container">

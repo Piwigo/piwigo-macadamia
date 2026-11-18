@@ -110,6 +110,14 @@ function macadam_assign_layout()
 
   $template->assign('MACADAM_DEFAULT_LAYOUT', $default_layout);
 
+  $color_scheme = (is_array($options) && isset($options['color_scheme']))
+    ? $options['color_scheme']
+    : 'blue';
+  if (!in_array($color_scheme, array('blue', 'green', 'orange', 'pink', 'bluenight', 'grayscale'), true)) {
+    $color_scheme = 'blue';
+  }
+  $template->assign('MACADAM_COLOR_SCHEME', $color_scheme);
+
   $header_image_url = '';
   $header_image_id = isset($options['header_image_id']) ? intval($options['header_image_id']) : 0;
   if ($header_image_id > 0) {
