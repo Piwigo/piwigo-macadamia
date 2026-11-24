@@ -32,5 +32,5 @@
     {/if}
   </nav>
 
-  {combine_script id='macadam.navigation' load='footer' path='themes/macadam/js/navigation.js'}
+  {combine_script id='macadam.navigation' load='footer' path='themes/macadamia/js/navigation.js'}
 {/if}

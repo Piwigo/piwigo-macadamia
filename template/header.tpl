@@ -48,17 +48,17 @@
     {foreach from=$themes item=theme}
       {if $theme.load_css}
         {* For the parent theme (e.g. 'default'), load its standard 'theme.css' file. *}
-        {if $theme.id != 'macadam'}
+        {if $theme.id != 'macadamia'}
           {combine_css path="themes/`$theme.id`/theme.css" order=-10}
           {* For our specific 'macadam' theme, load its CSS from the correct subfolder. *}
         {else}
           {* Import Fontello CSS *}
-          {combine_css path="themes/macadam/css/fontello/css/fontello.css" order=-11}
-          {combine_css path="themes/macadam/css/macadam.css" order=-10}
-          {combine_css path="themes/macadam/css/album.css" order=-10}
-          {combine_css path="themes/macadam/css/thumbnail.css" order=-10}
-          {combine_css path="themes/macadam/css/picture.css" order=-10}
-          {combine_css path="themes/macadam/css/calendar.css" order=-10}
+          {combine_css path="themes/macadamia/css/fontello/css/fontello.css" order=-11}
+          {combine_css path="themes/macadamia/css/macadamia.css" order=-10}
+          {combine_css path="themes/macadamia/css/album.css" order=-10}
+          {combine_css path="themes/macadamia/css/thumbnail.css" order=-10}
+          {combine_css path="themes/macadamia/css/picture.css" order=-10}
+          {combine_css path="themes/macadamia/css/calendar.css" order=-10}
         {/if}
       {/if}
       {if !empty($theme.local_head)}
@@ -66,7 +66,7 @@
       {/if}
     {/foreach}
 
-    {combine_css path="themes/macadam/css/header.css" order=-9}
+    {combine_css path="themes/macadamia/css/header.css" order=-9}
 
     {combine_script id="jquery" load="footer"}
   {/strip}
@@ -347,7 +347,7 @@
       {/if}
     </div>
 
-    {combine_script id='macadam.header' load='footer' require='jquery' path='themes/macadam/js/header.js'}
+    {combine_script id='macadam.header' load='footer' require='jquery' path='themes/macadamia/js/header.js'}
   </nav>
 
   <div id="the_page" class="macadam-main-container">

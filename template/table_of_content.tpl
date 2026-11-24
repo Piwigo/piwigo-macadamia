@@ -45,4 +45,4 @@
   </ul>
 </div>
 
-{combine_script id='macadam.toc' load='footer' path='themes/macadam/js/toc.js'}
+{combine_script id='macadam.toc' load='footer' path='themes/macadamia/js/toc.js'}

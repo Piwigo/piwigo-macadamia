@@ -1,4 +1,4 @@
-{combine_script id='macadam.switchboxes' load='footer' path='themes/macadam/js/switchboxes.js'}
+{combine_script id='macadam.switchboxes' load='footer' path='themes/macadamia/js/switchboxes.js'}
 {if isset($MENUBAR)}{$MENUBAR}{/if}
 <div id="content" class="content{if isset($MENUBAR)} contentWithMenu{/if} contentTags">
 

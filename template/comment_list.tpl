@@ -8,7 +8,7 @@
   min-height:{$comment_derivative_params->max_height()+5}px
 }
 {/html_style}{/strip}
-{combine_script id='macadam.comments' load='footer' path='themes/macadam/js/comments.js'}
+{combine_script id='macadam.comments' load='footer' path='themes/macadamia/js/comments.js'}
 <div class="loader" data-error-icon="{$ROOT_URL}{$themeconf.icon_dir}/errors_small.png"><img src="{$ROOT_URL}{$themeconf.img_dir}/ajax_loader.gif"></div>
 {/if}
 <ul class="commentsList">

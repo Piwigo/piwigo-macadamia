@@ -1,6 +1,6 @@
 {combine_script id='core.switchbox' load='async' require='jquery' path='themes/default/js/switchbox.js'}
-{combine_script id='macadam.index' load='footer' path='themes/macadam/js/index.js'}
-{combine_script id='macadam.switchboxes' load='footer' path='themes/macadam/js/switchboxes.js'}
+{combine_script id='macadam.index' load='footer' path='themes/macadamia/js/index.js'}
+{combine_script id='macadam.switchboxes' load='footer' path='themes/macadamia/js/switchboxes.js'}
 {combine_css path="themes/default/vendor/fontello/css/gallery-icon.css" order=-10}
 
 {if isset($errors) or isset($infos)}
@@ -40,26 +40,7 @@
           </li>
         {/if}
 
-        {* {if !empty($image_orders)}
-          <li>
-            <a id="sortOrderLink" class="gallery-icon-th-large" rel="nofollow">ðŸ”¢</a>
-            <div id="sortOrderBox" class="switchBox">
-              <div class="switchBoxTitle">{'Sort order'|@translate}</div>
-              {foreach from=$image_orders item=image_order name=loop}
-                {if !$smarty.foreach.loop.first}<br>{/if}
-
-                {if $image_order.SELECTED}
-                  <span>&#x2714; </span>{$image_order.DISPLAY}
-                  {else}
-                  <span style="visibility:hidden">&#x2714; </span><a href="{$image_order.URL}" rel="nofollow">{$image_order.DISPLAY}</a>
-                {/if}
-              {/foreach}
-            </div>
-
-          </li>
-        {/if} *}
-
-        {if !empty($U_EDIT)}
+        {if !empty($U_EDIT) or !empty($image_derivatives) or !empty($image_orders) or isset($U_SLIDESHOW)}
           <li class="dropdown-container">
             <a href="#" class="js-album-dropdown-trigger"
               style="cursor: pointer; color: inherit;">

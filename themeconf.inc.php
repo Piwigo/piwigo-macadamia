@@ -1,7 +1,7 @@
 <?php
 
 /*
-Theme Name: macadam
+Theme Name: macadamia
 Version: 0.1
 Description: DAM
 Theme URI: http://piwigo.org/ext/extension_view.php?eid=347
@@ -11,12 +11,15 @@ Author URI: http://piwigo.org/
 
 $themeconf = array(
   'parent' => 'default',
-  'name' => 'macadam',
+  'name' => 'macadamia',
 );
 
-load_language('theme.lang', PHPWG_THEMES_PATH . 'macadam/');
+load_language('theme.lang', PHPWG_THEMES_PATH . 'macadamia/');
 add_event_handler('loc_begin_index', 'macadam_get_header_albums');
 add_event_handler('loc_begin_index', 'macadam_assign_posted_calendar_url');
+add_event_handler('loc_begin_index', 'macadam_redirect_calendar_to_latest_month');
+add_event_handler('loc_begin_index', 'macadam_assign_calendar_thumbnails');
+add_event_handler('loc_begin_index', 'macadam_assign_calendar_available_dates');
 add_event_handler('loc_begin_picture', 'macadam_get_header_albums');
 add_event_handler('loc_begin_picture', 'macadam_load_picture_menubar');
 add_event_handler('loc_end_picture', 'macadam_get_picture_thumbnails');
@@ -31,6 +34,7 @@ add_event_handler('loc_end_index', 'macadam_toc_page');
 add_event_handler('loc_begin_index', 'macadam_assign_layout');
 add_event_handler('loc_begin_picture', 'macadam_assign_layout');
 add_event_handler('loc_begin_page_header', 'macadam_assign_layout');
+add_event_handler('ws_add_methods', 'macadam_ws_add_methods');
 
 /**
  * Loads the menu on photo pages.
@@ -50,6 +54,26 @@ function macadam_assign_posted_calendar_url()
   $current_field = isset($page['chronology_field'])
     ? $page['chronology_field']
     : '';
+  $existing_chronology_date = isset($page['chronology_date'])
+    ? $page['chronology_date']
+    : array();
+
+  $calendar_year = !empty($existing_chronology_date)
+    ? intval($existing_chronology_date[0])
+    : intval(date('Y'));
+  $calendar_month = count($existing_chronology_date) >= 2
+    ? intval($existing_chronology_date[1])
+    : intval(date('n'));
+
+  global $lang;
+  $calendar_month_name = (
+    isset($lang['month'][$calendar_month])
+    ? $lang['month'][$calendar_month]
+    : date('F', mktime(0, 0, 0, $calendar_month, 1, $calendar_year))
+  );
+  $template->assign('MACADAM_CALENDAR_MONTH', $calendar_month_name);
+  $template->assign('MACADAM_CALENDAR_YEAR', (string)$calendar_year);
+
   $removed = array(
     'start',
     'flat',
@@ -83,6 +107,456 @@ function macadam_assign_posted_calendar_url()
         'chronology_view' => 'calendar',
       ),
       $removed
+    )
+  );
+
+  $existing_chronology_date = isset($page['chronology_date'])
+    ? $page['chronology_date']
+    : array();
+  $has_selected_month = count($existing_chronology_date) >= 2;
+  $annual_year = !empty($existing_chronology_date)
+    ? intval($existing_chronology_date[0])
+    : intval(date('Y'));
+  $template->assign(
+    'MACADAM_ANNUAL_CALENDAR_URL',
+    duplicate_index_url(
+      array(
+        'chronology_field' => $current_field ?: 'posted',
+        'chronology_style' => 'monthly',
+        'chronology_view' => 'calendar',
+        'chronology_date' => array($annual_year),
+      ),
+      array('start', 'flat')
+    )
+  );
+
+  $chronology_date = $existing_chronology_date;
+  if (count($chronology_date) < 2) {
+    $chronology_date = array(
+      intval(date('Y')),
+      intval(date('n')),
+    );
+  } else {
+    $chronology_date = array(
+      intval($chronology_date[0]),
+      intval($chronology_date[1]),
+    );
+  }
+
+  $template->assign(
+    'MACADAM_MONTHLY_CALENDAR_URL',
+    duplicate_index_url(
+      array(
+        'chronology_field' => $current_field ?: 'posted',
+        'chronology_style' => 'monthly',
+        'chronology_view' => 'calendar',
+        'chronology_date' => $chronology_date,
+      ),
+      array('start', 'flat')
+    )
+  );
+
+  $template->assign(
+    'MACADAM_CALENDAR_ANNUAL_ACTIVE',
+    !$has_selected_month
+  );
+  $template->assign(
+    'MACADAM_CALENDAR_MONTHLY_ACTIVE',
+    $has_selected_month
+  );
+}
+
+/**
+ * Assigns photo availability for the selected year and for available years.
+ *
+ * month: all 12 months of the selected year, true when at least one photo exists.
+ * year: years between the oldest and newest matching photos, with availability.
+ * The availability date follows the active chronology field (posted or created).
+ */
+function macadam_assign_calendar_available_dates()
+{
+  global $template, $page, $user, $lang;
+
+  if (
+    !isset($page['chronology_view'])
+    || $page['chronology_view'] !== 'calendar'
+    || !isset($page['chronology_style'])
+    || $page['chronology_style'] !== 'monthly'
+  ) {
+    return;
+  }
+
+  $chronology_field = isset($page['chronology_field'])
+    ? $page['chronology_field']
+    : 'posted';
+  $date_field = $chronology_field === 'posted'
+    ? 'date_available'
+    : 'date_creation';
+
+  $selected_year = isset($page['chronology_date'][0])
+    ? intval($page['chronology_date'][0])
+    : intval(date('Y'));
+  $selected_month = isset($page['chronology_date'][1])
+    ? intval($page['chronology_date'][1])
+    : intval(date('n'));
+
+  $month = array();
+  for ($month_number = 1; $month_number <= 12; $month_number++) {
+    $month[$month_number] = false;
+  }
+
+  $query = '
+SELECT DISTINCT
+  ' . pwg_db_get_year($date_field) . ' AS period_year,
+  ' . pwg_db_get_month($date_field) . ' AS period_month
+FROM ' . IMAGES_TABLE . ' i';
+
+  if (isset($page['section']) && $page['section'] === 'categories') {
+    $query .= '
+INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' ic ON i.id = ic.image_id';
+
+    if (isset($page['category'])) {
+      $sub_ids = array_diff(
+        get_subcat_ids(array($page['category']['id'])),
+        explode(',', $user['forbidden_categories'])
+      );
+      if (empty($sub_ids)) {
+        $query = null;
+      } else {
+        $query .= '
+WHERE ic.category_id IN (' . implode(',', array_map('intval', $sub_ids)) . ')
+  ' . get_sql_condition_FandF(
+    array('visible_images' => 'i.id'),
+    'AND',
+    false
+  );
+      }
+    } else {
+      $query .= '
+  ' . get_sql_condition_FandF(
+    array(
+      'forbidden_categories' => 'ic.category_id',
+      'visible_categories' => 'ic.category_id',
+      'visible_images' => 'i.id',
+    ),
+    'WHERE',
+    true
+  );
+    }
+  } elseif (!empty($page['items'])) {
+    $query .= '
+WHERE i.id IN (' . implode(',', array_map('intval', $page['items'])) . ')';
+  } else {
+    $query = null;
+  }
+
+  $available_years = array();
+  $minimum_year = null;
+  $maximum_year = null;
+  if ($query !== null) {
+    $query .= '
+  AND i.' . $date_field . ' IS NOT NULL';
+
+    $result = pwg_query($query);
+    while ($row = pwg_db_fetch_assoc($result)) {
+      $period_year = intval($row['period_year']);
+      $period_month = intval($row['period_month']);
+      if ($period_year < 1 || $period_month < 1 || $period_month > 12) {
+        continue;
+      }
+
+      $available_years[$period_year] = true;
+      if ($period_year === $selected_year) {
+        $month[$period_month] = true;
+      }
+      if ($minimum_year === null || $period_year < $minimum_year) {
+        $minimum_year = $period_year;
+      }
+      if ($maximum_year === null || $period_year > $maximum_year) {
+        $maximum_year = $period_year;
+      }
+    }
+  }
+
+  $year = array();
+  if ($minimum_year !== null && $maximum_year !== null) {
+    for ($period_year = $minimum_year; $period_year <= $maximum_year; $period_year++) {
+      $year[$period_year] = isset($available_years[$period_year]);
+    }
+  }
+
+  $months = array();
+  for ($month_number = 1; $month_number <= 12; $month_number++) {
+    $months[] = array(
+      'label' => isset($lang['month'][$month_number])
+        ? $lang['month'][$month_number]
+        : date('F', mktime(0, 0, 0, $month_number, 1, $selected_year)),
+      'available' => !empty($month[$month_number]),
+      'selected' => $month_number === $selected_month,
+      'url' => duplicate_index_url(
+        array(
+          'chronology_field' => $chronology_field,
+          'chronology_style' => 'monthly',
+          'chronology_view' => 'calendar',
+          'chronology_date' => array($selected_year, $month_number),
+        ),
+        array('start', 'flat')
+      ),
+    );
+  }
+
+  if (!isset($year[$selected_year])) {
+    $year[$selected_year] = false;
+  }
+  ksort($year, SORT_NUMERIC);
+
+  $year_options = array();
+  foreach ($year as $year_number => $available) {
+    $year_options[] = array(
+      'label' => (string)$year_number,
+      'available' => $available,
+      'selected' => intval($year_number) === $selected_year,
+      'url' => duplicate_index_url(
+        array(
+          'chronology_field' => $chronology_field,
+          'chronology_style' => 'monthly',
+          'chronology_view' => 'calendar',
+          'chronology_date' => array(intval($year_number)),
+        ),
+        array('start', 'flat')
+      ),
+    );
+  }
+
+  $template->assign('MACADAM_CALENDAR_MONTH_OPTIONS', $months);
+  $template->assign('MACADAM_CALENDAR_YEAR_OPTIONS', $year_options);
+}
+
+/**
+ * Loads up to three photos for each day of the selected month.
+ *
+ * Piwigo's native month calendar provides one random thumbnail per day.
+ * This theme helper adds a small, per-day preview stack without replacing
+ * Piwigo's calendar grouping or pagination.
+ */
+function macadam_assign_calendar_thumbnails()
+{
+  global $template, $page, $user;
+
+  // This helper is useful only on Piwigo's monthly calendar view.
+  // It must have both a year and a month in chronology_date.
+  if (
+    !isset($page['chronology_field'])
+    || !isset($page['chronology_style'])
+    || !isset($page['chronology_view'])
+    || $page['chronology_style'] !== 'monthly'
+    || $page['chronology_view'] !== 'calendar'
+    || !isset($page['chronology_date'])
+    || count($page['chronology_date']) < 2
+  ) {
+    return;
+  }
+
+  // The calendar grid has already been built by Piwigo at this point.
+  // Reuse its month_view structure.
+  $smarty = method_exists($template, 'get_smarty')
+    ? $template->get_smarty()
+    : $template->smarty;
+  if (!$smarty) {
+    return;
+  }
+
+  $chronology_calendar = $smarty->getTemplateVars('chronology_calendar');
+  if (!is_array($chronology_calendar) || !isset($chronology_calendar['month_view'])) {
+    return;
+  }
+
+  $year = intval($page['chronology_date'][0]);
+  $month = intval($page['chronology_date'][1]);
+
+  // posted uses date_available (publication/import date);
+  // created uses date_creation (the photo's EXIF or creation date).
+  $date_field = $page['chronology_field'] === 'posted'
+    ? 'date_available'
+    : 'date_creation';
+
+  // The SQL retrieves image data and the day number in a single query.
+  // It intentionally returns all matching photos in the month: filtering
+  // to three thumbnails happens below, once per day.
+  $query = 'SELECT i.id, i.file, i.representative_ext, i.path, i.width, i.height, i.rotation,
+    ' . pwg_db_get_dayofmonth($date_field) . ' AS day_number
+FROM ' . IMAGES_TABLE . ' i';
+
+  // Limit category views to the current album and its sub-albums.
+  // USER_CACHE_CATEGORIES also applies Piwigo's visibility rules.
+  if ($page['section'] === 'categories') {
+    $query .= '
+INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' ic ON i.id = ic.image_id
+INNER JOIN ' . USER_CACHE_CATEGORIES_TABLE . ' uc
+  ON uc.cat_id = ic.category_id
+  AND uc.user_id = ' . intval($user['id']);
+
+    if (isset($page['category'])) {
+      $sub_ids = array_diff(
+        get_subcat_ids(array($page['category']['id'])),
+        explode(',', $user['forbidden_categories'])
+      );
+      if (empty($sub_ids)) {
+        return;
+      }
+      $query .= '
+WHERE ic.category_id IN (' . implode(',', array_map('intval', $sub_ids)) . ')';
+    } else {
+      $query .= '
+WHERE 1=1';
+    }
+  } elseif (!empty($page['items'])) {
+    $query .= '
+WHERE i.id IN (' . implode(',', array_map('intval', $page['items'])) . ')';
+  } else {
+    return;
+  }
+
+  // Restrict the query to the selected year/month and selected date field.
+  // Escape the generated boundaries, even though they are numeric here.
+  $query .= '
+  AND i.' . $date_field . ' BETWEEN "' . pwg_db_real_escape_string(sprintf('%04d-%02d-01', $year, $month))
+    . '" AND "' . pwg_db_real_escape_string(sprintf('%04d-%02d-%02d 23:59:59',
+      $year,
+      $month,
+      intval(date('t', mktime(0, 0, 0, $month, 1, $year)))
+    )) . '"
+  AND i.' . $date_field . ' IS NOT NULL
+ORDER BY i.' . $date_field . ' DESC';
+
+  // Keep at most three derivatives for each day. This makes the loop cheap:
+  // result rows beyond the third thumbnail for a day are discarded.
+  $thumbnails = array();
+  $result = pwg_query($query);
+  while ($row = pwg_db_fetch_assoc($result)) {
+    $day = intval($row['day_number']);
+    if (!isset($thumbnails[$day])) {
+      $thumbnails[$day] = array();
+    }
+    if (count($thumbnails[$day]) >= 3) {
+      continue;
+    }
+
+    // Build Piwigo's square derivative URL from the native image metadata.
+    // This is only a URL/derivative object, not an extra image SQL query.
+    $src_image = new SrcImage(array(
+      'id' => intval($row['id']),
+      'path' => $row['path'],
+      'representative_ext' => $row['representative_ext'],
+    ));
+    $derivative = new DerivativeImage(IMG_SQUARE, $src_image);
+    $picture_params = array('image_id' => intval($row['id']));
+    if (isset($page['category'])) {
+      $picture_params['category'] = $page['category'];
+    }
+    $thumbnails[$day][] = array(
+      'URL' => $derivative->get_url(),
+      'PICTURE_URL' => make_picture_url($picture_params),
+      'ALT' => $row['file'],
+    );
+  }
+
+  // Attach the prepared stack to Piwigo's existing week/day structure.
+  // Days outside the selected month keep their existing empty state.
+  foreach ($chronology_calendar['month_view']['weeks'] as &$week) {
+    foreach ($week as &$day) {
+      if (empty($day) || isset($day['OUTSIDE_MONTH'])) {
+        continue;
+      }
+      $day_number = intval($day['DAY']);
+      if (!empty($thumbnails[$day_number])) {
+        $day['THUMBNAILS'] = $thumbnails[$day_number];
+      }
+    }
+  }
+  unset($week, $day);
+
+  $template->assign('chronology_calendar', $chronology_calendar);
+}
+
+/**
+ * Opens calendar root URLs directly on the last not empty year and month.
+ */
+function macadam_redirect_calendar_to_latest_month()
+{
+  global $page, $template;
+
+  // Handle only the two unselected monthly-calendar root URLs.
+  $query_string = isset($_SERVER['QUERY_STRING'])
+    ? rawurldecode($_SERVER['QUERY_STRING'])
+    : '';
+  if (!preg_match(
+    '~/(posted|created)-monthly-calendar$~',
+    $query_string
+  )) {
+    return;
+  }
+
+  // Piwigo has already grouped the accessible photos by year and month so we reuse it
+  $smarty = method_exists($template, 'get_smarty')
+    ? $template->get_smarty()
+    : $template->smarty;
+  if (!$smarty) {
+    return;
+  }
+
+  $chronology_calendar = $smarty->getTemplateVars('chronology_calendar');
+  if (!is_array($chronology_calendar) || empty($chronology_calendar['calendar_bars'])) {
+    return;
+  }
+
+  $latest_year = 0;
+  $latest_month = 0;
+
+  // calendar_bars can contain year links in U_HEAD and month links in items. compare both forms to find the latest visible period.
+  foreach ($chronology_calendar['calendar_bars'] as $bar) {
+    if (isset($bar['U_HEAD']) &&
+        preg_match('~-(\d{4})(?:-(\d{1,2}))?(?:-|$)~', $bar['U_HEAD'], $matches)) {
+      $year = intval($matches[1]);
+      $month = isset($matches[2]) ? intval($matches[2]) : 0;
+      if ($year > $latest_year || ($year === $latest_year && $month > $latest_month)) {
+        $latest_year = $year;
+        $latest_month = $month;
+      }
+    }
+
+    if (!empty($bar['items']) && is_array($bar['items'])) {
+      foreach ($bar['items'] as $item) {
+        if (!isset($item['URL'])) {
+          continue;
+        }
+        if (preg_match('~-(\d{4})(?:-(\d{1,2}))?(?:-|$)~', $item['URL'], $matches)) {
+          $year = intval($matches[1]);
+          $month = isset($matches[2]) ? intval($matches[2]) : 0;
+          if ($year > $latest_year || ($year === $latest_year && $month > $latest_month)) {
+            $latest_year = $year;
+            $latest_month = $month;
+          }
+        }
+      }
+    }
+  }
+
+  if ($latest_year < 1) {
+    return;
+  }
+
+  // fallback
+  $latest_date = array($latest_year);
+  if ($latest_month > 0) {
+    $latest_date[] = $latest_month;
+  }
+
+  // Replace the root calendar URL with the latest existing period.
+  redirect(
+    duplicate_index_url(
+      array('chronology_date' => $latest_date),
+      array('start')
     )
   );
 }
@@ -390,18 +864,30 @@ function macadam_get_picture_thumbnails()
 {
   global $template, $page;
 
-  if (empty($page['items']) || !isset($page['category']['id'])) {
+  if (empty($page['items'])) {
     return;
   }
 
   include_once(PHPWG_ROOT_PATH . 'include/functions_picture.inc.php');
 
+  $ordered_items = array_values(array_filter(
+    array_map('intval', $page['items']),
+    function ($id) { return $id > 0; }
+  ));
+  $current_index = array_search(intval($page['image_id']), $ordered_items, true);
+  if ($current_index === false) {
+    $current_index = 0;
+  }
+
+  $window_start = max(0, $current_index - 25);
+  $window_end = min(count($ordered_items), $current_index + 26);
+  $window_items = array_slice($ordered_items, $window_start, $window_end - $window_start);
   $macadam_thumbs = array();
 
   $query = '
 SELECT id, name, file, path
   FROM ' . IMAGES_TABLE . '
-  WHERE id IN (' . implode(',', $page['items']) . ')
+  WHERE id IN (' . implode(',', $window_items) . ')
 ;';
   $result = pwg_query($query);
 
@@ -410,17 +896,27 @@ SELECT id, name, file, path
     $images_data[$row['id']] = $row;
   }
 
-  foreach ($page['items'] as $img_id) {
+  foreach ($window_items as $img_id) {
     if (!isset($images_data[$img_id])) {
       continue;
     }
 
     $img = $images_data[$img_id];
-    $url = make_picture_url(array('image_id' => $img['id'], 'category' => $page['category']));
+    $picture_params = array('image_id' => $img['id']);
+    if (isset($page['category'])) {
+      $picture_params['category'] = $page['category'];
+    } elseif (isset($page['search'])) {
+      $picture_params['search'] = $page['search'];
+    } elseif (isset($page['tags'])) {
+      $picture_params['tags'] = $page['tags'];
+    } elseif (isset($page['list'])) {
+      $picture_params['list'] = $page['list'];
+    }
+    $url = make_picture_url($picture_params);
 
     if (class_exists('SrcImage')) {
       $src_image = new SrcImage($img);
-      $derivative = new DerivativeImage(IMG_SQUARE, $src_image);
+      $derivative = new DerivativeImage(IMG_THUMB, $src_image);
       $src_url = $derivative->get_url();
       $full_derivative = new DerivativeImage(IMG_LARGE, $src_image);
       $full_src_url = $full_derivative->get_url();
@@ -438,7 +934,103 @@ SELECT id, name, file, path
     );
   }
 
-  $template->assign('MACADAM_THUMBS', $macadam_thumbs);
+  $template->assign(array(
+    'MACADAM_THUMBS' => $macadam_thumbs,
+    'MACADAM_ITEM_IDS' => json_encode($ordered_items),
+    'MACADAM_CATEGORY_ID' => isset($page['category']['id']) ? intval($page['category']['id']) : 0,
+    'MACADAM_SEARCH_ID' => isset($page['search']) ? strval($page['search']) : '',
+    'MACADAM_WINDOW_START' => $window_start,
+    'MACADAM_WINDOW_END' => $window_end - 1,
+  ));
+}
+
+/**
+ * Register the small API used to lazily expand the picture carousel.
+ */
+function macadam_ws_add_methods($arr)
+{
+  $service = &$arr[0];
+
+  $service->addMethod(
+    'macadamia.images.getWindow',
+    'macadam_ws_get_image_window',
+    array(
+      'ids' => array(),
+      'offset' => array('type' => WS_TYPE_INT, 'default' => 0),
+      'limit' => array('type' => WS_TYPE_INT, 'default' => 25),
+      'category_id' => array('type' => WS_TYPE_ID, 'default' => null),
+      'search_id' => array('default' => null),
+    ),
+    'get a window of images for the Macadamia carousel.'
+  );
+}
+
+/**
+ * Returns thumbnail/full-size URLs for a requested image window.
+ */
+function macadam_ws_get_image_window($params, $service)
+{
+  global $page;
+
+  $ids = array_values(array_filter(array_map(
+    'intval',
+    explode(',', $params['ids'])
+  ), function ($id) { return $id > 0; }));
+  $offset = max(0, intval($params['offset']));
+  $limit = min(25, max(1, intval($params['limit'])));
+  $window_ids = array_slice($ids, $offset, $limit);
+
+  if (empty($window_ids)) {
+    return array();
+  }
+
+  $query = '
+SELECT id, name, file, path
+  FROM ' . IMAGES_TABLE . '
+  WHERE id IN (' . implode(',', $window_ids) . ')
+;';
+  $result = pwg_query($query);
+  $images_data = array();
+  while ($row = pwg_db_fetch_assoc($result)) {
+    $images_data[$row['id']] = $row;
+  }
+
+  $items = array();
+  foreach ($window_ids as $img_id) {
+    if (!isset($images_data[$img_id])) {
+      continue;
+    }
+
+    $img = $images_data[$img_id];
+    $url_params = array('image_id' => $img['id']);
+    if (!empty($params['category_id'])) {
+      $category_result = pwg_query('
+SELECT id, name, permalink
+  FROM ' . CATEGORIES_TABLE . '
+  WHERE id = ' . intval($params['category_id']) . '
+LIMIT 1
+;');
+      if ($category_row = pwg_db_fetch_assoc($category_result)) {
+        $url_params['category'] = $category_row;
+      }
+    } elseif (!empty($params['search_id'])) {
+      $url_params['search'] = strval($params['search_id']);
+    }
+
+    $src_image = new SrcImage($img);
+    $src_url = (new DerivativeImage(IMG_THUMB, $src_image))->get_url();
+    $full_src_url = (new DerivativeImage(IMG_LARGE, $src_image))->get_url();
+
+    $items[] = array(
+      'id' => intval($img['id']),
+      'title' => !empty($img['name']) ? $img['name'] : $img['file'],
+      'url' => make_picture_url($url_params),
+      'src' => $src_url,
+      'full_src' => $full_src_url,
+    );
+  }
+
+  return $items;
 }
 
 /**

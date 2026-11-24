@@ -1,6 +1,6 @@
 ﻿{combine_script id='core.switchbox' load='async' require='jquery' path='themes/default/js/switchbox.js'}
-{combine_script id='macadam.picture' load='footer' require='jquery' path='themes/macadam/js/picture.js'}
-{combine_script id='macadam.picture-fullscreen' load='footer' path='themes/macadam/js/picture-fullscreen.js'}
+{combine_script id='macadam.picture' load='footer' require='jquery' path='themes/macadamia/js/picture.js'}
+{combine_script id='macadam.picture-fullscreen' load='footer' path='themes/macadamia/js/picture-fullscreen.js'}
 {if isset($MENUBAR)}{$MENUBAR}{/if}
 
 <div id="content">
@@ -193,7 +193,12 @@
       </div>
 
       {if isset($MACADAM_THUMBS) && !empty($MACADAM_THUMBS)}
-        <div class="carousel-strip-container">
+        <div class="carousel-strip-container"
+          data-macadam-item-ids='{$MACADAM_ITEM_IDS|escape:'html'}'
+          data-macadam-category-id='{$MACADAM_CATEGORY_ID|default:0}'
+          data-macadam-search-id='{$MACADAM_SEARCH_ID|default:''|escape:'html'}'
+          data-macadam-window-start='{$MACADAM_WINDOW_START|default:0}'
+          data-macadam-window-end='{$MACADAM_WINDOW_END|default:-1}'>
           <div class="macadam-carousel-strip">
             {foreach from=$MACADAM_THUMBS item=thumb}
               {assign var=is_active value=($thumb.id == $current.id)}

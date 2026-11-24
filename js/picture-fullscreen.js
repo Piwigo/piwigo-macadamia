@@ -50,13 +50,24 @@
 
   const arrowLeft = document.querySelector('.macadam-main-photo-stage .macadam-nav-arrow.arrow-left');
   const arrowRight = document.querySelector('.macadam-main-photo-stage .macadam-nav-arrow.arrow-right');
-  const thumbnailItems = Array.from(document.querySelectorAll('.macadam-carousel-strip .strip-thumb-item'));
+  let thumbnailItems = Array.from(document.querySelectorAll('.macadam-carousel-strip .strip-thumb-item'));
   let fullscreenImageIndex = thumbnailItems.findIndex(function(item) {
   return item.classList.contains('active');
   });
   let touchStartX = 0;
   let touchStartY = 0;
   let suppressImageClick = false;
+  const carouselContainer = document.querySelector('.carousel-strip-container');
+  const allItemIds = carouselContainer
+  ? JSON.parse(carouselContainer.dataset.macadamItemIds || '[]')
+  : [];
+  let renderedStartIndex = carouselContainer
+  ? parseInt(carouselContainer.dataset.macadamWindowStart, 10)
+  : 0;
+  let renderedEndIndex = carouselContainer
+  ? parseInt(carouselContainer.dataset.macadamWindowEnd, 10)
+  : -1;
+  let windowLoading = false;
 
   function logFullscreenVisit(imageId) {
   const parsedImageId = parseInt(imageId, 10);
@@ -76,6 +87,122 @@
   console.error('Unable to log fullscreen image visit:', status, error, xhr.responseText);
   }
   });
+  }
+
+  function createThumbnailItem(item) {
+    const link = document.createElement('a');
+    link.className = 'strip-thumb-item';
+    link.href = item.url;
+    link.dataset.fullSrc = item.full_src;
+    link.dataset.imageId = String(item.id);
+
+    const image = document.createElement('img');
+    image.src = item.src;
+    image.alt = item.title || '';
+    link.appendChild(image);
+
+    link.addEventListener('click', function() {
+      sessionStorage.setItem('macadam_carousel_scroll_left', String(carouselStrip.scrollLeft));
+    });
+    return link;
+  }
+
+  function trimThumbnailWindow(direction) {
+    if (thumbnailItems.length <= 101) return;
+
+    if (direction === 'previous') {
+      for (let i = 0; i < 25; i++) {
+        const item = thumbnailItems[thumbnailItems.length - 1];
+        if (item) {
+          item.remove();
+          thumbnailItems.pop();
+        }
+      }
+      renderedEndIndex -= 25;
+    } else {
+      for (let i = 0; i < 25; i++) {
+        const item = thumbnailItems[0];
+        if (item) {
+          item.remove();
+          thumbnailItems.shift();
+        }
+      }
+      fullscreenImageIndex -= 25;
+      renderedStartIndex += 25;
+    }
+  }
+
+  function loadThumbnailWindow(direction, onLoaded) {
+    if (!carouselStrip || windowLoading || typeof jQuery !== 'function') return;
+
+    const requestOffset = direction === 'previous'
+      ? Math.max(0, renderedStartIndex - 25)
+      : renderedEndIndex + 1;
+    if (direction === 'previous' && renderedStartIndex <= 0) return;
+    if (direction === 'next' && requestOffset >= allItemIds.length) return;
+
+    const requestData = {
+      ids: allItemIds.join(','),
+      offset: requestOffset,
+      limit: 25
+    };
+    const categoryId = parseInt(carouselContainer.dataset.macadamCategoryId, 10);
+    if (categoryId > 0) {
+      requestData.category_id = categoryId;
+    } else {
+      const searchId = carouselContainer.dataset.macadamSearchId;
+      if (searchId) {
+        requestData.search_id = searchId;
+      }
+    }
+
+    windowLoading = true;
+    jQuery.ajax({
+      type: 'POST',
+      url: rootUrl + 'ws.php?format=json&method=macadamia.images.getWindow',
+      data: requestData,
+      dataType: 'json',
+      success: function(response) {
+        const items = response && response.result ? response.result : [];
+        if (!items.length) return;
+
+        if (direction === 'previous') {
+          const previousScrollWidth = carouselStrip.scrollWidth;
+          const fragment = document.createDocumentFragment();
+          items.forEach(function(item) {
+            fragment.appendChild(createThumbnailItem(item));
+          });
+          carouselStrip.insertBefore(fragment, carouselStrip.firstChild);
+          window.requestAnimationFrame(function() {
+            carouselStrip.scrollLeft += carouselStrip.scrollWidth - previousScrollWidth;
+          });
+          fullscreenImageIndex += items.length;
+          renderedStartIndex = requestOffset;
+        } else {
+          const previousScrollLeft = carouselStrip.scrollLeft;
+          items.forEach(function(item) {
+            carouselStrip.appendChild(createThumbnailItem(item));
+          });
+          renderedEndIndex = requestOffset + items.length - 1;
+          window.requestAnimationFrame(function() {
+            carouselStrip.scrollLeft = previousScrollLeft;
+          });
+        }
+
+        thumbnailItems = Array.from(carouselStrip.querySelectorAll('.strip-thumb-item'));
+        trimThumbnailWindow(direction);
+        updateFullscreenArrowState();
+        if (typeof onLoaded === 'function') {
+          onLoaded();
+        }
+      },
+      error: function(xhr, status, error) {
+        console.error('Unable to load carousel thumbnails:', status, error, xhr.responseText);
+      },
+      complete: function() {
+        windowLoading = false;
+      }
+    });
   }
 
   function updateFullscreenArrowState() {
@@ -112,6 +239,12 @@
 
   function navigateToPrevious() {
   if (document.fullscreenElement) {
+  if (fullscreenImageIndex <= 2) {
+  loadThumbnailWindow('previous', function() {
+    navigateToPrevious();
+  });
+  return;
+  }
   if (fullscreenImageIndex > 0) {
   changeFullscreenImage(fullscreenImageIndex - 1);
   }
@@ -122,6 +255,12 @@
 
   function navigateToNext() {
   if (document.fullscreenElement) {
+  if (fullscreenImageIndex >= thumbnailItems.length - 3) {
+    loadThumbnailWindow('next', function() {
+      navigateToNext();
+    });
+    return;
+  }
   if (fullscreenImageIndex < thumbnailItems.length - 1) {
   changeFullscreenImage(fullscreenImageIndex + 1);
   }
@@ -153,6 +292,21 @@
   sessionStorage.setItem('macadam_carousel_scroll_left', String(carouselStrip.scrollLeft));
   });
   });
+
+  let carouselScrollPending = false;
+  carouselStrip.addEventListener('scroll', function() {
+    if (carouselScrollPending) return;
+    carouselScrollPending = true;
+    window.requestAnimationFrame(function() {
+      carouselScrollPending = false;
+      const distanceToRight = carouselStrip.scrollWidth - carouselStrip.clientWidth - carouselStrip.scrollLeft;
+      if (distanceToRight < 300) {
+        loadThumbnailWindow('next');
+      } else if (carouselStrip.scrollLeft < 300) {
+        loadThumbnailWindow('previous');
+      }
+    });
+  }, { passive: true });
   }
 
   if (theImage && container) {

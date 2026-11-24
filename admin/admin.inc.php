@@ -2,7 +2,7 @@
 
 global $conf;
 
-load_language('theme.lang', PHPWG_THEMES_PATH . 'macadam/');
+load_language('theme.lang', PHPWG_THEMES_PATH . 'macadamia/');
 
 $config_send = array();
 

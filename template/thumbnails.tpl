@@ -12,8 +12,8 @@
     }
     {/html_style}
 
-    {combine_script id='macadam.switchboxes' load='footer' path='themes/macadam/js/switchboxes.js'}
-    {combine_script id='macadam.thumbnail-config' load='footer' path='themes/macadam/js/thumbnail-config.js'}
+    {combine_script id='macadam.switchboxes' load='footer' path='themes/macadamia/js/switchboxes.js'}
+    {combine_script id='macadam.thumbnail-config' load='footer' path='themes/macadamia/js/thumbnail-config.js'}
 
     {if !empty($category_thumbnails)}
       <p class="macadam-photos-grid-title">{'Photos'|@translate}</p>
@@ -74,4 +74,4 @@
   {/strip}
   {/if}
 
-  {combine_script id='macadam.thumbnails' load='footer' require='jquery' path='themes/macadam/js/thumbnails.js'}
+  {combine_script id='macadam.thumbnails' load='footer' require='jquery' path='themes/macadamia/js/thumbnails.js'}

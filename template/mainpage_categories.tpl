@@ -7,8 +7,8 @@
   }
   {/html_style}{/strip}
 
-  {combine_script id='macadam.albums' load='footer' require='jquery' path='themes/macadam/js/albums.js'}
-  {combine_script id='macadam.thumbnail-config' load='footer' path='themes/macadam/js/thumbnail-config.js'}
+  {combine_script id='macadam.albums' load='footer' require='jquery' path='themes/macadamia/js/albums.js'}
+  {combine_script id='macadam.thumbnail-config' load='footer' path='themes/macadamia/js/thumbnail-config.js'}
 
   <div class="loader" data-error-icon="{$ROOT_URL}{$themeconf.icon_dir}/errors_small.png"><img src="{$ROOT_URL}{$themeconf.img_dir}/ajax_loader.gif"></div>
 

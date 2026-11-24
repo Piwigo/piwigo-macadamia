@@ -268,4 +268,4 @@
   </p>
 </form>
 
-{combine_script id='macadam.admin' load='footer' path='themes/macadam/js/admin.js'}
+{combine_script id='macadam.admin' load='footer' path='themes/macadamia/js/admin.js'}
