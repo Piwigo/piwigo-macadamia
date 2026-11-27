@@ -1,3 +1,5 @@
+{combine_script id='macadam.calendar' load='footer' path='themes/macadamia/js/calendar.js'}
+
 <div class="macadam-calendar-wrapper">
   <div class="macadam-calendar-navigation">
     {if isset($MACADAM_POSTED_CALENDAR_URL) && isset($MACADAM_CREATED_CALENDAR_URL)}
@@ -15,39 +17,50 @@
     {/if}
 
     <div class="cal-date-picker-zone">
-      {foreach from=$chronology_navigation_bars item=bar}
-        {if isset($bar.previous)}
-          <a class="cal-nav-arrow" href="{$bar.previous.URL}"
-            aria-label="{$bar.previous.LABEL|escape}"><i class="icon-arrow-left"></i></a>
+      {if $MACADAM_CALENDAR_ANNUAL_ACTIVE}
+        {if isset($MACADAM_CALENDAR_PREVIOUS_YEAR_URL)}
+          <a class="cal-nav-arrow" href="{$MACADAM_CALENDAR_PREVIOUS_YEAR_URL|escape}"
+            aria-label="{'Previous'|translate} {$MACADAM_CALENDAR_PREVIOUS_YEAR|escape}"><i class="icon-arrow-left"></i></a>
         {else}
           <a class="cal-nav-arrow"><i class="icon-arrow-left disabled"></i></a>
         {/if}
-      {/foreach}
+      {else}
+        {foreach from=$chronology_navigation_bars item=bar}
+          {if isset($bar.previous)}
+            <a class="cal-nav-arrow" href="{$bar.previous.URL}"
+              aria-label="{$bar.previous.LABEL|escape}"><i class="icon-arrow-left"></i></a>
+          {else}
+            <a class="cal-nav-arrow"><i class="icon-arrow-left disabled"></i></a>
+          {/if}
+        {/foreach}
+      {/if}
       <div class="cal-current-date">
-        <div class="cal-date-selector">
-          <button type="button" class="cal-month-menu" aria-expanded="false"
-            aria-controls="cal-month-popover">
-            {$MACADAM_CALENDAR_MONTH|escape}
-            <span class="cal-caret" aria-hidden="true"><i class="icon-arrow-down"></i></span>
-          </button>
-          <div class="cal-date-popover cal-month-popover" id="cal-month-popover" hidden>
-            <div class="cal-date-options">
-              {foreach from=$MACADAM_CALENDAR_MONTH_OPTIONS item=option}
-                {if $option.selected}
-                  <span class="date{if $option.available} date-usable{/if} date-used" aria-current="date">
-                    {$option.label|escape}
-                  </span>
-                {elseif $option.available}
-                  <a class="date date-usable" href="{$option.url|escape}">
-                    {$option.label|escape}
-                  </a>
-                {else}
-                  <span class="date" aria-disabled="true">{$option.label|escape}</span>
-                {/if}
-              {/foreach}
+        {if !$MACADAM_CALENDAR_ANNUAL_ACTIVE}
+          <div class="cal-date-selector">
+            <button type="button" class="cal-month-menu" aria-expanded="false"
+              aria-controls="cal-month-popover">
+              {$MACADAM_CALENDAR_MONTH|escape}
+              <span class="cal-caret" aria-hidden="true"><i class="icon-arrow-down"></i></span>
+            </button>
+            <div class="cal-date-popover cal-month-popover" id="cal-month-popover" hidden>
+              <div class="cal-date-options">
+                {foreach from=$MACADAM_CALENDAR_MONTH_OPTIONS item=option}
+                  {if $option.selected}
+                    <span class="date{if $option.available} date-usable{/if} date-used" aria-current="date">
+                      {$option.label|escape}
+                    </span>
+                  {elseif $option.available}
+                    <a class="date date-usable" href="{$option.url|escape}">
+                      {$option.label|escape}
+                    </a>
+                  {else}
+                    <span class="date" aria-disabled="true">{$option.label|escape}</span>
+                  {/if}
+                {/foreach}
+              </div>
             </div>
           </div>
-        </div>
+        {/if}
         <div class="cal-date-selector">
           <button type="button" class="cal-year-menu" aria-expanded="false"
             aria-controls="cal-year-popover">
@@ -73,14 +86,23 @@
           </div>
         </div>
       </div>
-      {foreach from=$chronology_navigation_bars item=bar}
-        {if isset($bar.next)}
-          <a class="cal-nav-arrow" href="{$bar.next.URL}"
-            aria-label="{$bar.next.LABEL|escape}"><i class="icon-arrow-right"></i></a>
+      {if $MACADAM_CALENDAR_ANNUAL_ACTIVE}
+        {if isset($MACADAM_CALENDAR_NEXT_YEAR_URL)}
+          <a class="cal-nav-arrow" href="{$MACADAM_CALENDAR_NEXT_YEAR_URL|escape}"
+            aria-label="{'Next'|translate} {$MACADAM_CALENDAR_NEXT_YEAR|escape}"><i class="icon-arrow-right"></i></a>
         {else}
           <a class="cal-nav-arrow"><i class="icon-arrow-right disabled"></i></a>
         {/if}
-      {/foreach}
+      {else}
+        {foreach from=$chronology_navigation_bars item=bar}
+          {if isset($bar.next)}
+            <a class="cal-nav-arrow" href="{$bar.next.URL}"
+              aria-label="{$bar.next.LABEL|escape}"><i class="icon-arrow-right"></i></a>
+          {else}
+            <a class="cal-nav-arrow"><i class="icon-arrow-right disabled"></i></a>
+          {/if}
+        {/foreach}
+      {/if}
     </div>
 
     <div class="cal-view-modes" role="group" aria-label="{'View mode'|translate}">
@@ -95,71 +117,53 @@
     </div>
   </div>
 
-  {footer_script}
-  (function() {
-    var selectors = document.querySelectorAll('.cal-date-selector');
-
-    function closePopovers(except) {
-      selectors.forEach(function(selector) {
-        var popover = selector.querySelector('.cal-date-popover');
-        var button = selector.querySelector('button');
-        if (popover && popover !== except) {
-          popover.hidden = true;
-          button.setAttribute('aria-expanded', 'false');
-        }
-      });
-    }
-
-    selectors.forEach(function(selector) {
-      var button = selector.querySelector('button');
-      var popover = selector.querySelector('.cal-date-popover');
-      button.addEventListener('click', function(event) {
-        event.stopPropagation();
-        var willOpen = popover.hidden;
-        closePopovers(popover);
-        popover.hidden = !willOpen;
-        button.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
-      });
-      popover.addEventListener('click', function(event) {
-        event.stopPropagation();
-      });
-    });
-
-    document.addEventListener('click', function() {
-      closePopovers();
-    });
-    document.addEventListener('keydown', function(event) {
-      if (event.key === 'Escape') {
-        closePopovers();
-      }
-    });
-  }());
-  {/footer_script}
-
   {if !empty($chronology_calendar.calendar_bars)}
+    <div class="calendar-year-months">
     {foreach from=$chronology_calendar.calendar_bars item=bar}
       <section class="calendar-period">
-        <h3><a href="{$bar.U_HEAD}">{$bar.HEAD_LABEL}</a> ({$bar.NB_IMAGES})</h3>
-        <div class="calendar-period-items">
-          {if isset($bar.items)}
-            {foreach from=$bar.items item=item}
-              {if isset($item.URL)}
-                <a class="calendar-period-item" href="{$item.URL}">
-                  {$item.LABEL}
-                  {if isset($item.NB_IMAGES)}({$item.NB_IMAGES}){/if}
-                </a>
-              {else}
-                <span class="calendar-period-item current">{$item.LABEL}</span>
-              {/if}
-            {/foreach}
+        <h3>
+          {if isset($bar.U_HEAD)}
+            <a href="{$bar.U_HEAD|escape}">{$bar.HEAD_LABEL|escape}</a>
+          {else}
+            {$bar.HEAD_LABEL|escape}
           {/if}
-        </div>
-
+        </h3>
+        {if isset($bar.calendar_weeks)}
+          <table class="calendar-month-grid">
+            <thead>
+              <tr>
+                {foreach from=$MACADAM_CALENDAR_WEEKDAYS item=weekday}
+                  <th scope="col"><abbr title="{$weekday|escape}">{$weekday|truncate:1:""|escape}</abbr></th>
+                {/foreach}
+              </tr>
+            </thead>
+            <tbody>
+              {foreach from=$bar.calendar_weeks item=week}
+                <tr>
+                  {foreach from=$week item=day}
+                    <td class="calendar-month-day{if $day.NB_IMAGES < 0} outside-month{elseif $day.NB_IMAGES > 0} has-photos{/if}">
+                      {if $day.NB_IMAGES < 0}
+                        <span class="calendar-month-day-number">{$day.DAY}</span>
+                      {elseif isset($day.URL)}
+                        <a class="calendar-month-day-link" href="{$day.URL|escape}">
+                          <span class="calendar-month-day-number">{$day.DAY}</span>
+                        </a>
+                      {else}
+                        <span class="calendar-month-day-number">{$day.DAY}</span>
+                      {/if}
+                    </td>
+                  {/foreach}
+                </tr>
+              {/foreach}
+            </tbody>
+          </table>
+        {/if}
       </section>
     {/foreach}
+    </div>
   {/if}
 
-  {if isset($chronology_calendar.month_view)}
+  {if isset($chronology_calendar.month_view) && empty($MACADAM_CALENDAR_HAS_MONTH_GRIDS)}
     <table class="macadam-calendar-table" role="grid">
       <tbody>
         {foreach from=$chronology_calendar.month_view.weeks item=week}

@@ -19,6 +19,8 @@ add_event_handler('loc_begin_index', 'macadam_get_header_albums');
 add_event_handler('loc_begin_index', 'macadam_assign_posted_calendar_url');
 add_event_handler('loc_begin_index', 'macadam_redirect_calendar_to_latest_month');
 add_event_handler('loc_begin_index', 'macadam_assign_calendar_thumbnails');
+add_event_handler('loc_begin_index', 'macadam_assign_month_calendar_padding');
+add_event_handler('loc_begin_index', 'macadam_assign_calendar_year_grids');
 add_event_handler('loc_begin_index', 'macadam_assign_calendar_available_dates');
 add_event_handler('loc_begin_picture', 'macadam_get_header_albums');
 add_event_handler('loc_begin_picture', 'macadam_load_picture_menubar');
@@ -57,10 +59,20 @@ function macadam_assign_posted_calendar_url()
   $existing_chronology_date = isset($page['chronology_date'])
     ? $page['chronology_date']
     : array();
+  $query_string = isset($_SERVER['QUERY_STRING'])
+    ? rawurldecode($_SERVER['QUERY_STRING'])
+    : '';
+  $requested_year_only = preg_match(
+    '~/(?:posted|created)-monthly-calendar-(\d{4})(?:&|$)~',
+    $query_string,
+    $year_match
+  );
 
-  $calendar_year = !empty($existing_chronology_date)
+  $calendar_year = $requested_year_only
+    ? intval($year_match[1])
+    : (!empty($existing_chronology_date)
     ? intval($existing_chronology_date[0])
-    : intval(date('Y'));
+    : intval(date('Y')));
   $calendar_month = count($existing_chronology_date) >= 2
     ? intval($existing_chronology_date[1])
     : intval(date('n'));
@@ -73,6 +85,10 @@ function macadam_assign_posted_calendar_url()
   );
   $template->assign('MACADAM_CALENDAR_MONTH', $calendar_month_name);
   $template->assign('MACADAM_CALENDAR_YEAR', (string)$calendar_year);
+  $template->assign(
+    'MACADAM_CALENDAR_YEAR_SELECTED',
+    $requested_year_only || !empty($existing_chronology_date)
+  );
 
   $removed = array(
     'start',
@@ -113,10 +129,13 @@ function macadam_assign_posted_calendar_url()
   $existing_chronology_date = isset($page['chronology_date'])
     ? $page['chronology_date']
     : array();
-  $has_selected_month = count($existing_chronology_date) >= 2;
-  $annual_year = !empty($existing_chronology_date)
+  $has_selected_month = count($existing_chronology_date) >= 2
+    && !$requested_year_only;
+  $annual_year = $requested_year_only
+    ? intval($year_match[1])
+    : (!empty($existing_chronology_date)
     ? intval($existing_chronology_date[0])
-    : intval(date('Y'));
+    : intval(date('Y')));
   $template->assign(
     'MACADAM_ANNUAL_CALENDAR_URL',
     duplicate_index_url(
@@ -311,25 +330,271 @@ WHERE i.id IN (' . implode(',', array_map('intval', $page['items'])) . ')';
   ksort($year, SORT_NUMERIC);
 
   $year_options = array();
+  $previous_year_url = null;
+  $previous_year = null;
+  $next_year_url = null;
+  $next_year = null;
   foreach ($year as $year_number => $available) {
+    $year_url = duplicate_index_url(
+      array(
+        'chronology_field' => $chronology_field,
+        'chronology_style' => 'monthly',
+        'chronology_view' => 'calendar',
+        'chronology_date' => array(intval($year_number)),
+      ),
+      array('start', 'flat')
+    );
     $year_options[] = array(
       'label' => (string)$year_number,
       'available' => $available,
       'selected' => intval($year_number) === $selected_year,
-      'url' => duplicate_index_url(
-        array(
-          'chronology_field' => $chronology_field,
-          'chronology_style' => 'monthly',
-          'chronology_view' => 'calendar',
-          'chronology_date' => array(intval($year_number)),
-        ),
-        array('start', 'flat')
-      ),
+      'url' => $year_url,
     );
+
+    if ($available && $year_number < $selected_year) {
+      $previous_year_url = $year_url;
+      $previous_year = $year_number;
+    } elseif (
+      $available
+      && $year_number > $selected_year
+      && $next_year_url === null
+    ) {
+      $next_year_url = $year_url;
+      $next_year = $year_number;
+    }
   }
 
   $template->assign('MACADAM_CALENDAR_MONTH_OPTIONS', $months);
   $template->assign('MACADAM_CALENDAR_YEAR_OPTIONS', $year_options);
+  if ($previous_year_url !== null) {
+    $template->assign('MACADAM_CALENDAR_PREVIOUS_YEAR_URL', $previous_year_url);
+    $template->assign('MACADAM_CALENDAR_PREVIOUS_YEAR', (string)$previous_year);
+  }
+  if ($next_year_url !== null) {
+    $template->assign('MACADAM_CALENDAR_NEXT_YEAR_URL', $next_year_url);
+    $template->assign('MACADAM_CALENDAR_NEXT_YEAR', (string)$next_year);
+  }
+}
+
+/**
+ * Builds a Monday-to-Sunday day-count grid for a month.
+ *
+ * Missing days inside the month have a count of 0; padding days have a count of -1.
+ */
+function macadam_build_calendar_month_weeks($year, $month, $items)
+{
+  $days_in_month = intval(date('t', mktime(12, 0, 0, $month, 1, $year)));
+  $first_weekday = intval(date('N', mktime(12, 0, 0, $month, 1, $year)));
+  $day_items = array();
+
+  foreach ($items as $item) {
+    if (!isset($item['LABEL']) || !is_numeric($item['LABEL'])) {
+      continue;
+    }
+
+    $day_number = intval($item['LABEL']);
+    if ($day_number < 1 || $day_number > $days_in_month) {
+      continue;
+    }
+
+    $day_items[$day_number] = array(
+      'NB_IMAGES' => isset($item['NB_IMAGES'])
+        ? intval($item['NB_IMAGES'])
+        : 0,
+    );
+    if (isset($item['URL'])) {
+      $day_items[$day_number]['URL'] = $item['URL'];
+    }
+  }
+
+  $weeks = array();
+  $week = array();
+  $previous_month_days = intval(date('t', mktime(12, 0, 0, $month, 0, $year)));
+  for ($padding = $first_weekday - 1; $padding > 0; $padding--) {
+    $week[] = array(
+      'DAY' => $previous_month_days - $padding + 1,
+      'NB_IMAGES' => -1,
+    );
+  }
+
+  for ($day_number = 1; $day_number <= $days_in_month; $day_number++) {
+    $day = array(
+      'DAY' => $day_number,
+      'NB_IMAGES' => isset($day_items[$day_number])
+        ? $day_items[$day_number]['NB_IMAGES']
+        : 0,
+    );
+    if (isset($day_items[$day_number]['URL'])) {
+      $day['URL'] = $day_items[$day_number]['URL'];
+    }
+    $week[] = $day;
+
+    if (count($week) === 7) {
+      $weeks[] = $week;
+      $week = array();
+    }
+  }
+
+  if (!empty($week)) {
+    $next_month_day = 1;
+    while (count($week) < 7) {
+      $week[] = array(
+        'DAY' => $next_month_day,
+        'NB_IMAGES' => -1,
+      );
+      $next_month_day++;
+    }
+    $weeks[] = $week;
+  }
+
+  return $weeks;
+}
+
+/**
+ * Builds all twelve monthly grids for a selected annual calendar.
+ */
+function macadam_assign_calendar_year_grids()
+{
+  global $template, $page, $lang;
+
+  $smarty = method_exists($template, 'get_smarty')
+    ? $template->get_smarty()
+    : $template->smarty;
+  if (!$smarty) {
+    return;
+  }
+
+  if (
+    !$smarty->getTemplateVars('MACADAM_CALENDAR_YEAR_SELECTED')
+    || !$smarty->getTemplateVars('MACADAM_CALENDAR_ANNUAL_ACTIVE')
+  ) {
+    return;
+  }
+
+  $year = intval($smarty->getTemplateVars('MACADAM_CALENDAR_YEAR'));
+  if ($year < 1) {
+    return;
+  }
+  $chronology_field = isset($page['chronology_field'])
+    ? $page['chronology_field']
+    : 'posted';
+
+  $chronology_calendar = $smarty->getTemplateVars('chronology_calendar');
+  if (!is_array($chronology_calendar)) {
+    $chronology_calendar = array();
+  }
+
+  $month_bars = array();
+  if (!empty($chronology_calendar['calendar_bars'])) {
+    foreach ($chronology_calendar['calendar_bars'] as $bar) {
+      if (
+        !isset($bar['U_HEAD'])
+        || !preg_match(
+          '~-(\d{4})-(\d{1,2})(?:-|&|$)~',
+          $bar['U_HEAD'],
+          $matches
+        )
+        || intval($matches[1]) !== $year
+      ) {
+        continue;
+      }
+
+      $month = intval($matches[2]);
+      if ($month >= 1 && $month <= 12) {
+        $month_bars[$month] = $bar;
+      }
+    }
+  }
+
+  if (
+    empty($month_bars)
+    && isset($chronology_calendar['month_view'])
+    && isset($page['chronology_date'][1])
+    && !empty($chronology_calendar['month_view']['weeks'])
+  ) {
+    $month = intval($page['chronology_date'][1]);
+    if ($month >= 1 && $month <= 12) {
+      $items = array();
+      $month_count = 0;
+      foreach ($chronology_calendar['month_view']['weeks'] as $week) {
+        foreach ($week as $day) {
+          if (
+            empty($day)
+            || isset($day['OUTSIDE_MONTH'])
+            || empty($day['NB_ELEMENTS'])
+          ) {
+            continue;
+          }
+
+          $day_count = intval($day['NB_ELEMENTS']);
+          $month_count += $day_count;
+          $item = array(
+            'LABEL' => intval($day['DAY']),
+            'NB_IMAGES' => $day_count,
+          );
+          if (isset($day['U_IMG_LINK'])) {
+            $item['URL'] = $day['U_IMG_LINK'];
+          }
+          $items[] = $item;
+        }
+      }
+
+      $month_bars[$month] = array(
+        'U_HEAD' => duplicate_index_url(
+          array(
+            'chronology_field' => $chronology_field,
+            'chronology_style' => 'monthly',
+            'chronology_view' => 'calendar',
+            'chronology_date' => array($year, $month),
+          ),
+          array('start', 'flat')
+        ),
+        'NB_IMAGES' => $month_count,
+        'HEAD_LABEL' => $lang['month'][$month],
+        'items' => $items,
+      );
+    }
+  }
+
+  $calendar_bars = array();
+  for ($month = 1; $month <= 12; $month++) {
+    if (isset($month_bars[$month])) {
+      $bar = $month_bars[$month];
+    } else {
+      $bar = array(
+        'NB_IMAGES' => 0,
+        'HEAD_LABEL' => $lang['month'][$month],
+        'items' => array(),
+      );
+    }
+
+    $bar['HEAD_LABEL'] = $lang['month'][$month];
+    if (empty($bar['NB_IMAGES'])) {
+      $bar['NB_IMAGES'] = 0;
+    }
+    $bar['calendar_weeks'] = macadam_build_calendar_month_weeks(
+      $year,
+      $month,
+      isset($bar['items']) && is_array($bar['items'])
+        ? $bar['items']
+        : array()
+    );
+    $calendar_bars[] = $bar;
+  }
+
+  $weekday_labels = array(
+    $lang['day'][1],
+    $lang['day'][2],
+    $lang['day'][3],
+    $lang['day'][4],
+    $lang['day'][5],
+    $lang['day'][6],
+    $lang['day'][0],
+  );
+  $chronology_calendar['calendar_bars'] = $calendar_bars;
+  $template->assign('MACADAM_CALENDAR_WEEKDAYS', $weekday_labels);
+  $template->assign('MACADAM_CALENDAR_HAS_MONTH_GRIDS', true);
+  $template->assign('chronology_calendar', $chronology_calendar);
 }
 
 /**
@@ -475,6 +740,90 @@ ORDER BY i.' . $date_field . ' DESC';
     }
   }
   unset($week, $day);
+
+  $template->assign('chronology_calendar', $chronology_calendar);
+}
+
+/**
+ * Adds adjacent-month day numbers to the empty cells in Piwigo's month grid.
+ */
+function macadam_assign_month_calendar_padding()
+{
+  global $template, $page;
+
+  if (
+    !isset($page['chronology_style'])
+    || $page['chronology_style'] !== 'monthly'
+    || !isset($page['chronology_view'])
+    || $page['chronology_view'] !== 'calendar'
+    || !isset($page['chronology_date'])
+    || count($page['chronology_date']) < 2
+  ) {
+    return;
+  }
+
+  $smarty = method_exists($template, 'get_smarty')
+    ? $template->get_smarty()
+    : $template->smarty;
+  if (!$smarty) {
+    return;
+  }
+
+  $chronology_calendar = $smarty->getTemplateVars('chronology_calendar');
+  if (
+    !is_array($chronology_calendar)
+    || empty($chronology_calendar['month_view']['weeks'])
+  ) {
+    return;
+  }
+
+  $year = intval($page['chronology_date'][0]);
+  $month = intval($page['chronology_date'][1]);
+  if ($year < 1 || $month < 1 || $month > 12) {
+    return;
+  }
+
+  $weeks = &$chronology_calendar['month_view']['weeks'];
+  $leading_cells = 0;
+  while (
+    isset($weeks[0][$leading_cells])
+    && empty($weeks[0][$leading_cells])
+  ) {
+    $leading_cells++;
+  }
+
+  if ($leading_cells > 0) {
+    $previous_month_days = intval(date('t', mktime(12, 0, 0, $month, 0, $year)));
+    for ($column = 0; $column < $leading_cells; $column++) {
+      $weeks[0][$column] = array(
+        'DAY' => $previous_month_days - $leading_cells + $column + 1,
+        'OUTSIDE_MONTH' => true,
+      );
+    }
+  }
+
+  $last_week_index = count($weeks) - 1;
+  $last_day_index = count($weeks[$last_week_index]) - 1;
+  while (
+    $last_day_index >= 0
+    && empty($weeks[$last_week_index][$last_day_index])
+  ) {
+    $last_day_index--;
+  }
+
+  $next_month_day = 1;
+  for (
+    $column = $last_day_index + 1;
+    $column < count($weeks[$last_week_index]);
+    $column++
+  ) {
+    $weeks[$last_week_index][$column] = array(
+      'DAY' => $next_month_day,
+      'OUTSIDE_MONTH' => true,
+    );
+    $next_month_day++;
+  }
+  unset($weeks);
 
   $template->assign('chronology_calendar', $chronology_calendar);
 }

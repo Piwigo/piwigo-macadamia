@@ -240,6 +240,10 @@
   color: var(--color-text-gray-deep);
 }
 
+.cal-day-cell.outside-month .day-number {
+  color: #C0C0C0;
+}
+
 .photos-badge {
   background-color: var(--color-variable-3);
   color: var(--color-white);
@@ -311,30 +315,103 @@
      0  1px 0 var(--color-white);
 }
 
-.calendar-period {
-  margin: 16px 0;
-  padding: 16px;
+.calendar-year-months {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
   background: var(--color-white);
-  border: 1px solid var(--color-border-light);
-  border-radius: 8px;
+  border: 1px solid var(--color-border-dark);
+  border-radius: 5px;
+  padding: 5px 0;
 }
 
-.calendar-period-item {
-  padding: 6px 10px;
-  text-decoration: none;
+.calendar-year-months .calendar-period {
+  min-width: 0;
+  margin: 0;
+  padding: 13px 25px;
 }
 
-.calendar-period-item.current {
-  color: var(--color-text-gray-deep);
-  font-weight: 600;
+.calendar-month-grid {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
 }
 
 .calendar-period h3 {
-  margin: 0 0 12px;
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-variable-3);
 }
 
-.calendar-period-items {
+.calendar-period h3 a {
+  color: var(--color-variable-3);
+  text-decoration: underline;
+}
+
+.calendar-period h3 a:hover {
+  color: var(--color-variable-4);
+}
+
+.calendar-month-grid th {
+  padding-bottom: 13px;
+  color: var(--color-font-dark);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.calendar-month-grid th abbr {
+  text-decoration: none;
+}
+
+.calendar-month-day {
+  padding: 4px;
+  color: var(--color-text-gray-deep);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.calendar-month-day.outside-month {
+  color: var(--color-font-dark);
+}
+
+.calendar-month-day.has-photos span {
+  background: var(--color-variable-4);
+  color: var(--color-white);
+  border-radius: 10px;
+  padding: 4px 4px 3px;
+}
+
+.calendar-month-day.has-photos{
+  padding: 0 0 1px;
+}
+
+.calendar-month-day.has-photos:hover span {
+  background: var(--color-variable-3);
+}
+
+.calendar-month-day-link {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  line-height: 1.1;
+  text-decoration: none;
+}
+
+@media (max-width: 900px) {
+  .calendar-year-months {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .calendar-year-months {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
