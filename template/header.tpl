@@ -360,7 +360,7 @@
       <div class="macadam-header-content">
 
         {if $BODY_ID != 'thePicturePage'}
-          <h1 class="macadam-gallery-title">DEMO GALLERY</h1>
+          <h1 class="macadam-gallery-title">{$GALLERY_TITLE}</h1>
         {/if}
 
         <div class="macadam-header-search">

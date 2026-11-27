@@ -239,7 +239,7 @@
 
   function navigateToPrevious() {
   if (document.fullscreenElement) {
-  if (fullscreenImageIndex <= 2) {
+  if (fullscreenImageIndex <= 2 && renderedStartIndex > 0) {
   loadThumbnailWindow('previous', function() {
     navigateToPrevious();
   });
@@ -255,7 +255,7 @@
 
   function navigateToNext() {
   if (document.fullscreenElement) {
-  if (fullscreenImageIndex >= thumbnailItems.length - 3) {
+  if (fullscreenImageIndex >= thumbnailItems.length - 3 && renderedEndIndex < allItemIds.length - 1) {
     loadThumbnailWindow('next', function() {
       navigateToNext();
     });
@@ -367,17 +367,25 @@
   }
 
   document.addEventListener('keydown', function(e) {
-  if (document.fullscreenElement && container.classList.contains('macadam-in-fullscreen')) {
-  if (e.key === 'ArrowLeft') {
+  const target = e.target || e.srcElement;
+  if (e.altKey || e.metaKey || (target && (target.type || target.isContentEditable))) return;
+
+  const isFullscreen = document.fullscreenElement && container.classList.contains('macadam-in-fullscreen');
+  const key = e.key || ({ 37: 'ArrowLeft', 39: 'ArrowRight', 27: 'Escape' })[e.keyCode];
+  if (key === 'ArrowLeft' && (isFullscreen || e.ctrlKey || document.documentElement.scrollLeft === 0)) {
+  if (isFullscreen || (arrowLeft && !arrowLeft.classList.contains('disabled'))) {
   e.preventDefault();
   navigateToPrevious();
-  } else if (e.key === 'ArrowRight') {
+  }
+  } else if (key === 'ArrowRight' &&
+    (isFullscreen || e.ctrlKey || document.documentElement.scrollLeft === document.documentElement.scrollWidth - document.documentElement.clientWidth)) {
+  if (isFullscreen || (arrowRight && !arrowRight.classList.contains('disabled'))) {
   e.preventDefault();
   navigateToNext();
-  } else if (e.key === 'Escape') {
+  }
+  } else if (key === 'Escape' && isFullscreen) {
   e.preventDefault();
   toggleFullscreen();
-  }
   }
   });
 

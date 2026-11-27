@@ -7,19 +7,21 @@
   }
   {/html_style}{/strip}
 
+  {define_derivative name='album_derivative_params' width=432 height=432 crop=true}
+
   {combine_script id='macadam.albums' load='footer' require='jquery' path='themes/macadamia/js/albums.js'}
   {combine_script id='macadam.thumbnail-config' load='footer' path='themes/macadamia/js/thumbnail-config.js'}
 
   <div class="loader" data-error-icon="{$ROOT_URL}{$themeconf.icon_dir}/errors_small.png"><img src="{$ROOT_URL}{$themeconf.img_dir}/ajax_loader.gif"></div>
 
-  {function name=render_album_cards albums=$category_thumbnails depth=0 pwg=$pwg derivative_params=$derivative_params}
+  {function name=render_album_cards albums=$category_thumbnails depth=0 pwg=$pwg derivative_params=$derivative_params album_derivative_params=$album_derivative_params}
     {foreach from=$albums item=cat name=cat_loop}
       <div class="album-wrapper{if $depth > 0} is-sub-album{/if}">
 
       {assign var=derivative value=null}
       {assign var=main_img_id value=$cat.representative_picture_id|default:0}
       {if isset($cat.representative) && !empty($cat.representative.src_image)}
-        {macadam_square_derivative src_image=$cat.representative.src_image assign="derivative"}
+        {assign var=derivative value=$pwg->derivative($album_derivative_params, $cat.representative.src_image)}
       {/if}
 
       {macadam_get_extra_images cat_id=$cat.id main_img_id=$main_img_id assign="extra_images"}
@@ -131,7 +133,7 @@
       {if isset($cat.count_categories) and $cat.count_categories > 0}
         <div class="sub-albums-container">
           {if isset($MACADAM_ALL_ALBUMS[$cat.id].sub_albums) && !empty($MACADAM_ALL_ALBUMS[$cat.id].sub_albums)}
-            {call name=render_album_cards albums=$MACADAM_ALL_ALBUMS[$cat.id].sub_albums depth=$depth+1 pwg=$pwg derivative_params=$derivative_params}
+            {call name=render_album_cards albums=$MACADAM_ALL_ALBUMS[$cat.id].sub_albums depth=$depth+1 pwg=$pwg derivative_params=$derivative_params album_derivative_params=$album_derivative_params}
           {/if}
         </div>
       {/if}
@@ -144,5 +146,5 @@
   <p class="macadam-photos-grid-title-al">{'Albums'|@translate}</p>
 {/if}
 <div class="macadam-albums-container macadam-main-grid-active">
-  {call name=render_album_cards albums=$category_thumbnails depth=0 pwg=$pwg derivative_params=$derivative_params}
+  {call name=render_album_cards albums=$category_thumbnails depth=0 pwg=$pwg derivative_params=$derivative_params album_derivative_params=$album_derivative_params}
 </div>
