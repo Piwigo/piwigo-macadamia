@@ -46,9 +46,9 @@
               <div class="cal-date-options">
                 {foreach from=$MACADAM_CALENDAR_MONTH_OPTIONS item=option}
                   {if $option.selected}
-                    <span class="date{if $option.available} date-usable{/if} date-used" aria-current="date">
+                    <a class="date date-usable date-used" href="{$option.url|escape}" aria-current="date">
                       {$option.label|escape}
-                    </span>
+                    </a>
                   {elseif $option.available}
                     <a class="date date-usable" href="{$option.url|escape}">
                       {$option.label|escape}
@@ -71,9 +71,9 @@
             <div class="cal-date-options">
               {foreach from=$MACADAM_CALENDAR_YEAR_OPTIONS item=option}
                 {if $option.selected}
-                  <span class="date{if $option.available} date-usable{/if} date-used" aria-current="date">
+                  <a class="date date-usable date-used" href="{$option.url|escape}" aria-current="date">
                     {$option.label|escape}
-                  </span>
+                  </a>
                 {elseif $option.available}
                   <a class="date date-usable" href="{$option.url|escape}">
                     {$option.label|escape}

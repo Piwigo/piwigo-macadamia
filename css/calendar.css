@@ -158,7 +158,9 @@
 }
 
 .cal-date-popover a.date-usable:hover,
-.cal-date-popover a.date-usable:focus-visible {
+.cal-date-popover a.date-used:hover,
+.cal-date-popover a.date-usable:focus-visible,
+.cal-date-popover a.date-used:focus-visible {
   background-color: var(--color-variable-5);
   color: var(--color-variable-4);
   font-weight: 700;
@@ -168,7 +170,7 @@
   background: var(--color-variable-5);
   color: var(--color-variable-1);
   font-weight: 700;
-  cursor: default;
+  cursor: pointer;
 }
 
 .cal-caret {
@@ -191,6 +193,12 @@
   border: 1px solid var(--color-border-dark);
   background-color: var(--color-variable-5);
   transition: all 0.2s;
+}
+
+.cal-btn-mode:hover {
+  color: var(--color-white);
+  border: 1px solid var(--color-variable-3);
+  background-color: var(--color-variable-3);
 }
 
 .cal-btn-mode.active {
