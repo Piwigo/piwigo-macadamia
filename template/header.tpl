@@ -40,7 +40,7 @@
     <link rel="canonical" href="{$U_CANONICAL}">
   {/if}
 
-  {if not empty($page_refresh)}
+  {if not empty($page_refresh) and !isset($U_SLIDESHOW_STOP)}
     <meta http-equiv="refresh" content="{$page_refresh.TIME};url={$page_refresh.U_REFRESH}">
   {/if}
 
@@ -59,6 +59,7 @@
           {combine_css path="themes/macadamia/css/thumbnail.css" order=-10}
           {combine_css path="themes/macadamia/css/picture.css" order=-10}
           {combine_css path="themes/macadamia/css/calendar.css" order=-10}
+          {combine_css path="themes/macadamia/css/slideshow.css" order=-10}
         {/if}
       {/if}
       {if !empty($theme.local_head)}
@@ -81,7 +82,7 @@
   {/if}
 </head>
 
-<body id="{$BODY_ID}" class="{foreach from=$BODY_CLASSES item=class}{$class} {/foreach}macadam-chroma-{if isset($MACADAM_COLOR_SCHEME)}{$MACADAM_COLOR_SCHEME}{else}blue{/if}" data-infos='{$BODY_DATA}' data-macadam-default-layout="{if isset($MACADAM_DEFAULT_LAYOUT) and $MACADAM_DEFAULT_LAYOUT == 'list'}list{else}grid{/if}">
+<body id="{$BODY_ID}" class="{foreach from=$BODY_CLASSES item=class}{$class} {/foreach}macadam-chroma-{if isset($MACADAM_COLOR_SCHEME)}{$MACADAM_COLOR_SCHEME}{else}blue{/if}{if isset($U_SLIDESHOW_STOP)} macadam-slideshow-page{/if}" data-infos='{$BODY_DATA}' data-macadam-default-layout="{if isset($MACADAM_DEFAULT_LAYOUT) and $MACADAM_DEFAULT_LAYOUT == 'list'}list{else}grid{/if}">
 
   <nav class="macadam-sidebar-nav">
     <div class="mobile-menu-overlay"></div>
@@ -294,10 +295,7 @@
         {/if}
       </div>
 
-      {if isset($U_LOGIN_REGISTER)}
-        <a href="{$U_LOGIN_REGISTER}" class="sidebar-icon-link"><i
-            class="icon-person"></i></a>
-      {else}
+      {if isset($U_LOGOUT)}
         <div class="sidebar-dropdown-container">
           <a href="#" class="sidebar-icon-link sidebar-icon-link-drop"><i class="icon-person"></i></a>
           <div class="sidebar-dropdown-menu">
@@ -309,12 +307,14 @@
                   <div class="tag-item-row"><a href="{$U_ADMIN}">{'Administration'|translate}</a></div>
                 </li>
               {/if}
-              <li>
-                <div class="tag-item-row">
-                  <a
-                    href="{$U_PHOTO_ADMIN|default:$U_PROFILE|default:" `$ROOT_URL`profile.php"}">{'Customize'|translate}</a>
-                </div>
-              </li>
+              {if isset($U_ADMIN)}
+                <li>
+                  <div class="tag-item-row">
+                    <a
+                      href="{$U_PHOTO_ADMIN|default:$U_PROFILE|default:" `$ROOT_URL`profile.php"}">{'Customize'|translate}</a>
+                  </div>
+                </li>
+              {/if}
               {if isset($blocks.mbMenu->data.rss)}
                 {assign var='notif_link' value=$blocks.mbMenu->data.rss}
                 <li>
@@ -326,24 +326,27 @@
                   </div>
                 </li>
               {/if}
-              <li>
-                <div class="tag-item-row"><a href="{$ROOT_URL}admin.php?page=photos_add">{'Add photos'|translate}</a>
-                </div>
-              </li>
-              <li>
-                <div class="tag-item-row"><a href="{$ROOT_URL}admin.php?page=batch_manager">{'Edit photos'|translate}</a>
-                </div>
-              </li>
+              {if isset($U_ADMIN)}
+                <li>
+                  <div class="tag-item-row"><a href="{$ROOT_URL}admin.php?page=photos_add">{'Add photos'|translate}</a>
+                  </div>
+                </li>
+                <li>
+                  <div class="tag-item-row"><a href="{$ROOT_URL}admin.php?page=batch_manager">{'Edit photos'|translate}</a>
+                  </div>
+                </li>
+              {/if}
             </ul>
-            {if isset($U_LOGOUT)}
-              <div class="dropdown-menu-footer" style="justify-content: start; padding-top: 20px;">
-                <div class="tag-item-row" style="padding-bottom: 10px;">
-                  <a href="{$U_LOGOUT}">{'Logout'|translate}</a>
-                </div>
+            <div class="dropdown-menu-footer" style="justify-content: start; padding-top: 20px;">
+              <div class="tag-item-row" style="padding-bottom: 10px;">
+                <a href="{$U_LOGOUT}">{'Logout'|translate}</a>
               </div>
-            {/if}
+            </div>
           </div>
         </div>
+      {else}
+        <a href="{if isset($U_LOGIN_REGISTER)}{$U_LOGIN_REGISTER}{else}{$ROOT_URL}identification.php{/if}"
+          class="sidebar-icon-link"><i class="icon-person"></i></a>
       {/if}
     </div>
 

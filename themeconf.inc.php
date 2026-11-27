@@ -994,9 +994,11 @@ function macadam_register_smarty_functions()
   if (method_exists($smarty, 'registerPlugin')) {
     $smarty->registerPlugin('function', 'macadam_get_extra_images', 'macadam_smarty_get_extra_images');
     $smarty->registerPlugin('function', 'macadam_has_photos', 'macadam_smarty_has_photos');
+    $smarty->registerPlugin('function', 'macadam_square_derivative', 'macadam_smarty_square_derivative');
   } else {
     $smarty->register_function('macadam_get_extra_images', 'macadam_smarty_get_extra_images');
     $smarty->register_function('macadam_has_photos', 'macadam_smarty_has_photos');
+    $smarty->register_function('macadam_square_derivative', 'macadam_smarty_square_derivative');
   }
 
   $registered = true;
@@ -1016,6 +1018,11 @@ function macadam_smarty_has_photos($params, $smarty)
   if (isset($params['assign'])) {
     $smarty->assign($params['assign'], $has_photos);
   }
+}
+
+function macadam_smarty_square_derivative($params, $smarty)
+{
+  $smarty->assign($params['assign'], new DerivativeImage(IMG_SQUARE, $params['src_image']));
 }
 
 /**

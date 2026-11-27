@@ -19,7 +19,7 @@
       {assign var=derivative value=null}
       {assign var=main_img_id value=$cat.representative_picture_id|default:0}
       {if isset($cat.representative) && !empty($cat.representative.src_image)}
-        {assign var=derivative value=$pwg->derivative($derivative_params, $cat.representative.src_image)}
+        {macadam_square_derivative src_image=$cat.representative.src_image assign="derivative"}
       {/if}
 
       {macadam_get_extra_images cat_id=$cat.id main_img_id=$main_img_id assign="extra_images"}
@@ -85,26 +85,30 @@
               </span>
             </div>
 
-            <div class="album-actions-trigger">
-              <i class="icon-three-dot"></i>
+            {if $SHAREALBUM_ACTIVE or isset($U_ADMIN)}
+              <div class="album-actions-trigger">
+                <i class="icon-three-dot"></i>
 
-              <div class="album-dropdown-menu">
-                {if $SHAREALBUM_ACTIVE}
-                  <a href="#" class="dropdown-item btn-share-album" data-has-link="{if isset($SHAREALBUM_LINKS[$cat.id])}true{else}false{/if}" data-share-url="{if isset($SHAREALBUM_LINKS[$cat.id])}{$SHAREALBUM_LINKS[$cat.id]}{/if}">
-                    <i class="icon-share"></i>
-                    <span>{'Share album'|@translate}</span>
-                  </a>
-                {/if}
-                <a href="{$ROOT_URL}admin.php?page=album-{$cat.id}" class="dropdown-item btn-edit-album">
-                  <i class="icon-edit"></i>
-                  <span>{'Edit album'|@translate}</span>
-                </a>
-                <a href="{$ROOT_URL}admin.php?page=photos_add&amp;album={$cat.id}" class="dropdown-item btn-add-photos">
-                  <i class="icon-add"></i>
-                  <span>{'Add photos to the album'|@translate}</span>
-                </a>
+                <div class="album-dropdown-menu">
+                  {if $SHAREALBUM_ACTIVE}
+                    <a href="#" class="dropdown-item btn-share-album" data-has-link="{if isset($SHAREALBUM_LINKS[$cat.id])}true{else}false{/if}" data-share-url="{if isset($SHAREALBUM_LINKS[$cat.id])}{$SHAREALBUM_LINKS[$cat.id]}{/if}">
+                      <i class="icon-share"></i>
+                      <span>{'Share album'|@translate}</span>
+                    </a>
+                  {/if}
+                  {if isset($U_ADMIN)}
+                    <a href="{$ROOT_URL}admin.php?page=album-{$cat.id}" class="dropdown-item btn-edit-album">
+                      <i class="icon-edit"></i>
+                      <span>{'Edit album'|@translate}</span>
+                    </a>
+                    <a href="{$ROOT_URL}admin.php?page=photos_add&amp;album={$cat.id}" class="dropdown-item btn-add-photos">
+                      <i class="icon-add"></i>
+                      <span>{'Add photos to the album'|@translate}</span>
+                    </a>
+                  {/if}
+                </div>
               </div>
-            </div>
+            {/if}
           </div>
 
           <div class="album-description-zone">
